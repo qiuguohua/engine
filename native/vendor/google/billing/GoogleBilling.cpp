@@ -23,94 +23,243 @@
 ****************************************************************************/
 
 #include "vendor/google/billing/GoogleBilling.h"
-#include "vendor/google/billing/GoogleBillingHelper.h"
 #include "platform/java/jni/JniHelper.h"
 #include "platform/java/jni/JniImp.h"
-
+#include "vendor/google/billing/GoogleBillingHelper.h"
+#include "vendor/google/billing/GoogleBillingManager.h"
 namespace cc {
 
+BillingClient::BillingClient(Builder* builder) {
+    this->_enableAlternativeBillingOnly = builder->_enableAlternativeBillingOnly;
+    this->_enableExternalOffer = builder->_enableExternalOffer;
+    this->_pendingPurchasesParams = builder->_pendingPurchasesParams;
+    this->purchasesUpdatedListener = builder->purchasesUpdatedListener;
+    this->userChoiceBillingListener = builder->userChoiceBillingListener;
+
+    if (this->_pendingPurchasesParams) {
+        _tag = GoogleBillingHelper::createBillingClient(
+            builder->_enableAlternativeBillingOnly,
+            builder->_enableExternalOffer,
+            builder->_pendingPurchasesParams->_enableOneTimeProducts,
+            builder->_pendingPurchasesParams->_enablePrepaidPlans);
+    } else {
+        _tag = GoogleBillingHelper::createBillingClient(
+            builder->_enableAlternativeBillingOnly,
+            builder->_enableExternalOffer,
+            false,
+            false);
+    }
+
+    CC_ASSERT(_tag >= 0);
+    GoogleBillingManager::getInstance()->pushBillingClient(_tag, this);
+    delete builder;
+}
+
+BillingClient::~BillingClient() {
+    CC_ASSERT(_tag >= 0);
+    GoogleBillingHelper::removeBillingClient(_tag);
+    GoogleBillingManager::getInstance()->removeBillingClient(_tag);
+}
+
 ProductDetails::~ProductDetails() {
-    for (auto* ptr : subscriptionOfferDetails) {
+    if (_oneTimePurchaseOfferDetails) {
+        delete _oneTimePurchaseOfferDetails;
+        _oneTimePurchaseOfferDetails = nullptr;
+    }
+    for (auto* ptr : _subscriptionOfferDetails) {
         delete ptr;
     }
-    subscriptionOfferDetails.clear();
-    GoogleBillingHelper::removeProductDetails(_id);
+    _subscriptionOfferDetails.clear();
+    GoogleBillingHelper::removeProductDetails(_tag, _id);
 }
 
 Purchase::~Purchase() {
-    GoogleBillingHelper::removePurchase(_id);
+    GoogleBillingHelper::removePurchase(_tag, _id);
 }
 
-void GoogleBilling::startConnection() {
-    GoogleBillingHelper::startConnection();
+void BillingClient::startConnection(se::Object* listener) {
+    auto it = std::find(_billingClientStateListeners.begin(), _billingClientStateListeners.end(), listener);
+    if (it == _billingClientStateListeners.end()) {
+        listener->root();
+        listener->incRef();
+        _billingClientStateListeners.push_back(listener);
+        GoogleBillingHelper::startConnection(_tag, _billingClientStateListeners.size() - 1);
+    } else {
+        //
+    }
 }
 
-void GoogleBilling::endConnection() {
-    GoogleBillingHelper::endConnection();
+void BillingClient::endConnection() {
+    GoogleBillingHelper::endConnection(_tag);
 }
 
-int GoogleBilling::getConnectionState() const {
-    return GoogleBillingHelper::getConnectionState();
+int BillingClient::getConnectionState() const {
+    return GoogleBillingHelper::getConnectionState(_tag);
 }
 
-bool GoogleBilling::isReady() const {
-    return GoogleBillingHelper::isReady();
+bool BillingClient::isReady() const {
+    return GoogleBillingHelper::isReady(_tag);
 }
 
-void GoogleBilling::queryProductDetailsParams(const std::vector<std::string>& productIds, const std::string& type) {
-    GoogleBillingHelper::queryProductDetailsParams(productIds, type);
+void BillingClient::queryProductDetailsAsync(QueryProductDetailsParams* params, se::Object* listener) {
+    auto it = std::find(_productDetailsResponseListeners.begin(), _productDetailsResponseListeners.end(), listener);
+    if (it == _productDetailsResponseListeners.end()) {
+        listener->root();
+        listener->incRef();
+        _productDetailsResponseListeners.push_back(listener);
+        std::vector<std::string> productIDs;
+        std::vector<std::string> productTypes;
+        for (auto product : params->_productList) {
+            productIDs.push_back(product->_productID);
+            productTypes.push_back(product->_productType);
+        }
+        GoogleBillingHelper::queryProductDetailsAsync(_tag, _productDetailsResponseListeners.size() - 1, productIDs, productTypes);
+    } else {
+        //
+    }
 }
 
-void GoogleBilling::launchBillingFlow(const std::vector<ProductDetails*>& productDetailsList, const std::string& selectedOfferToken) {
-    GoogleBillingHelper::launchBillingFlow(productDetailsList, selectedOfferToken);
+void BillingClient::launchBillingFlow(BillingFlowParams* params) {
+    GoogleBillingHelper::launchBillingFlow(_tag, params);
 }
 
-void GoogleBilling::consumePurchases(const std::vector<Purchase*>& purchases) {
-    GoogleBillingHelper::consumePurchases(purchases);
+void BillingClient::consumeAsync(ConsumeParams* params, se::Object* listener) {
+    auto it = std::find(_consumeResponseListeners.begin(), _consumeResponseListeners.end(), listener);
+    if (it == _consumeResponseListeners.end()) {
+        listener->root();
+        listener->incRef();
+        _consumeResponseListeners.push_back(listener);
+        GoogleBillingHelper::consumeAsync(_tag, _consumeResponseListeners.size() - 1, params);
+    } else {
+        //
+    }
 }
 
-void GoogleBilling::acknowledgePurchase(const std::vector<Purchase*>& purchases) {
-    GoogleBillingHelper::acknowledgePurchase(purchases);
+void BillingClient::acknowledgePurchase(AcknowledgePurchaseParams* params, se::Object* listener) {
+    auto it = std::find(_acknowledgePurchaseResponseListeners.begin(), _acknowledgePurchaseResponseListeners.end(), listener);
+    if (it == _acknowledgePurchaseResponseListeners.end()) {
+        listener->root();
+        listener->incRef();
+        _acknowledgePurchaseResponseListeners.push_back(listener);
+        GoogleBillingHelper::acknowledgePurchase(_tag, _acknowledgePurchaseResponseListeners.size() - 1, params);
+    } else {
+        //
+    }
 }
 
-void GoogleBilling::queryPurchasesAsync(const std::string& productType) {
-    GoogleBillingHelper::queryPurchasesAsync(productType);
+void BillingClient::queryPurchasesAsync(QueryPurchasesParams* params, se::Object* listener) {
+    auto it = std::find(_queryPurchasesResponseListeners.begin(), _queryPurchasesResponseListeners.end(), listener);
+    if (it == _queryPurchasesResponseListeners.end()) {
+        listener->root();
+        listener->incRef();
+        _queryPurchasesResponseListeners.push_back(listener);
+        GoogleBillingHelper::queryPurchasesAsync(_tag, _queryPurchasesResponseListeners.size() - 1, params->_productType);
+    } else {
+        //
+    }
 }
 
-void GoogleBilling::getBillingConfigAsync() {
-    GoogleBillingHelper::getBillingConfigAsync();
+void BillingClient::getBillingConfigAsync(GetBillingConfigParams* params, se::Object* listener) {
+    auto it = std::find(_billingConfigListeners.begin(), _billingConfigListeners.end(), listener);
+    if (it == _billingConfigListeners.end()) {
+        listener->root();
+        listener->incRef();
+        _billingConfigListeners.push_back(listener);
+        GoogleBillingHelper::getBillingConfigAsync(_tag, _billingConfigListeners.size() - 1);
+    } else {
+        //
+    }
 }
 
-BillingResult* GoogleBilling::isFeatureSupported(const std::string& feature) {
-    return GoogleBillingHelper::isFeatureSupported(feature);
+BillingResult* BillingClient::isFeatureSupported(const std::string& feature) {
+    return GoogleBillingHelper::isFeatureSupported(_tag, feature);
 }
 
-void GoogleBilling::createAlternativeBillingOnlyReportingDetailsAsync() {
-    GoogleBillingHelper::createAlternativeBillingOnlyReportingDetailsAsync();
+void BillingClient::createAlternativeBillingOnlyReportingDetailsAsync(se::Object* listener) {
+    auto it = std::find(_alternativeBillingOnlyReportingDetailsListeners.begin(), _alternativeBillingOnlyReportingDetailsListeners.end(), listener);
+    if (it == _alternativeBillingOnlyReportingDetailsListeners.end()) {
+        listener->root();
+        listener->incRef();
+        _alternativeBillingOnlyReportingDetailsListeners.push_back(listener);
+        GoogleBillingHelper::createAlternativeBillingOnlyReportingDetailsAsync(_tag, _alternativeBillingOnlyReportingDetailsListeners.size() - 1);
+    } else {
+        //
+    }
 }
 
-void GoogleBilling::isAlternativeBillingOnlyAvailableAsync() {
-    GoogleBillingHelper::isAlternativeBillingOnlyAvailableAsync();
+void BillingClient::isAlternativeBillingOnlyAvailableAsync(se::Object* listener) {
+    auto it = std::find(_alternativeBillingOnlyAvailabilityListeners.begin(), _alternativeBillingOnlyAvailabilityListeners.end(), listener);
+    if (it == _alternativeBillingOnlyAvailabilityListeners.end()) {
+        listener->root();
+        listener->incRef();
+        _alternativeBillingOnlyAvailabilityListeners.push_back(listener);
+        GoogleBillingHelper::isAlternativeBillingOnlyAvailableAsync(_tag, _alternativeBillingOnlyAvailabilityListeners.size() - 1);
+    } else {
+        //
+    }
 }
 
-void GoogleBilling::createExternalOfferReportingDetailsAsync() {
-    GoogleBillingHelper::createExternalOfferReportingDetailsAsync();
+void BillingClient::createExternalOfferReportingDetailsAsync(se::Object* listener) {
+    auto it = std::find(_externalOfferReportingDetailsListeners.begin(), _externalOfferReportingDetailsListeners.end(), listener);
+    if (it == _externalOfferReportingDetailsListeners.end()) {
+        listener->root();
+        listener->incRef();
+        _externalOfferReportingDetailsListeners.push_back(listener);
+        GoogleBillingHelper::createExternalOfferReportingDetailsAsync(_tag, _externalOfferReportingDetailsListeners.size() - 1);
+    } else {
+        //
+    }
 }
 
-void GoogleBilling::isExternalOfferAvailableAsync() {
-    GoogleBillingHelper::isExternalOfferAvailableAsync();
+void BillingClient::isExternalOfferAvailableAsync(se::Object* listener) {
+    auto it = std::find(_externalOfferAvailabilityListeners.begin(), _externalOfferAvailabilityListeners.end(), listener);
+    if (it == _externalOfferAvailabilityListeners.end()) {
+        listener->root();
+        listener->incRef();
+        _externalOfferAvailabilityListeners.push_back(listener);
+        GoogleBillingHelper::isExternalOfferAvailableAsync(_tag, _externalOfferAvailabilityListeners.size() - 1);
+    } else {
+        //
+    }
 }
 
-BillingResult* GoogleBilling::showAlternativeBillingOnlyInformationDialog() {
-    return GoogleBillingHelper::showAlternativeBillingOnlyInformationDialog();
+BillingResult* BillingClient::showAlternativeBillingOnlyInformationDialog(se::Object* listener) {
+    auto it = std::find(_alternativeBillingOnlyInformationDialogListeners.begin(), _alternativeBillingOnlyInformationDialogListeners.end(), listener);
+    if (it == _alternativeBillingOnlyInformationDialogListeners.end()) {
+        listener->root();
+        listener->incRef();
+        _alternativeBillingOnlyInformationDialogListeners.push_back(listener);
+        return GoogleBillingHelper::showAlternativeBillingOnlyInformationDialog(_tag, _alternativeBillingOnlyInformationDialogListeners.size() - 1);
+    } else {
+        //
+    }
+    return nullptr;
 }
 
-BillingResult* GoogleBilling::showExternalOfferInformationDialog() {
-    return GoogleBillingHelper::showExternalOfferInformationDialog();
+BillingResult* BillingClient::showExternalOfferInformationDialog(se::Object* listener) {
+    auto it = std::find(_externalOfferInformationDialogListeners.begin(), _externalOfferInformationDialogListeners.end(), listener);
+    if (it == _externalOfferInformationDialogListeners.end()) {
+        listener->root();
+        listener->incRef();
+        _externalOfferInformationDialogListeners.push_back(listener);
+        return GoogleBillingHelper::showExternalOfferInformationDialog(_tag, _externalOfferInformationDialogListeners.size() - 1);
+    } else {
+        //
+    }
+    return nullptr;
 }
 
-BillingResult* GoogleBilling::showInAppMessages() {
-    return GoogleBillingHelper::showInAppMessages();
+BillingResult* BillingClient::showInAppMessages(InAppMessageParams* params, se::Object* listener) {
+    auto it = std::find(_inappListeners.begin(), _inappListeners.end(), listener);
+    if (it == _inappListeners.end()) {
+        listener->root();
+        listener->incRef();
+        _inappListeners.push_back(listener);
+        return GoogleBillingHelper::showInAppMessages(_tag, _inappListeners.size() - 1, params->_inAppMessageCategoryIds);
+    } else {
+        //
+    }
+    return nullptr;
 }
 
 } // namespace cc

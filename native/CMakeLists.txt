@@ -764,8 +764,12 @@ if(USE_GOOGLE_BILLING)
     cocos_source_files(
         vendor/google/billing/GoogleBilling.cpp
         vendor/google/billing/GoogleBilling.h
+        vendor/google/billing/GoogleBillingManager.h
+        vendor/google/billing/GoogleBillingManager.cpp
         vendor/google/billing/GoogleBillingHelper.cpp
         vendor/google/billing/GoogleBillingHelper.h
+        vendor/google/billing/GoogleBillingToNative.cpp
+        vendor/google/billing/GoogleBillingToNative.h
     )
 endif()
 
@@ -1074,6 +1078,9 @@ set(SWIG_OUTPUT_ROOT ${CMAKE_CURRENT_BINARY_DIR}/generated)
 set(SWIG_OUTPUT ${SWIG_OUTPUT_ROOT}/cocos/bindings/auto)
 cc_gen_swig_files(${CMAKE_CURRENT_LIST_DIR}/tools/swig-config ${SWIG_OUTPUT})
 
+if(USE_GOOGLE_BILLING) 
+    cc_gen_swig_files(${CMAKE_CURRENT_LIST_DIR}/tools/swig-config/android ${SWIG_OUTPUT})
+endif()
 
 ##### platform
 cocos_source_files(
@@ -2232,6 +2239,13 @@ if(USE_WEBVIEW)
     cocos_source_files(
         NO_WERROR   NO_UBUILD   ${SWIG_OUTPUT}/jsb_webview_auto.cpp
                                 ${SWIG_OUTPUT}/jsb_webview_auto.h
+    )
+endif()
+
+if(USE_GOOGLE_BILLING)
+    cocos_source_files(
+        NO_WERROR   NO_UBUILD   ${SWIG_OUTPUT}/jsb_google_billing_auto.cpp
+                                ${SWIG_OUTPUT}/jsb_google_billing_auto.h
     )
 endif()
 
