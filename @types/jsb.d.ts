@@ -1105,28 +1105,28 @@ declare namespace jsb {
         SUBS = 'subs'
     }
 
-    export namespace BillingFlowParams {
-        export interface ProductDetailsParamsBuilder {
-            setOfferToken: (purchaseToken: string) => ProductDetailsParamsBuilder;
-            setProductDetails: (productDetails: ProductDetails) => ProductDetailsParamsBuilder;
-            build: () => ProductDetailsParams;
-        }
-        export class ProductDetailsParams {
-            public static newBuilder(): ProductDetailsParamsBuilder;
-        }
+    export interface ProductDetailsParamsBuilder {
+        setOfferToken: (purchaseToken: string) => ProductDetailsParamsBuilder;
+        setProductDetails: (productDetails: ProductDetails) => ProductDetailsParamsBuilder;
+        build: () => ProductDetailsParams;
+    }
+    export class ProductDetailsParams {
+        newBuilder: () => ProductDetailsParamsBuilder;
+    }
 
-        export interface SubscriptionUpdateParamsBuilder {
-            setOldPurcchaseToken: (purchaseToken: string) => SubscriptionUpdateParamsBuilder;
-            setOriginalExternalTransactionId: (externalTransactionId: string) => SubscriptionUpdateParamsBuilder;
-            setSubscriptionReplacementMode: (subscriptionReplacementMode: number) => SubscriptionUpdateParamsBuilder;
-            build: () => SubscriptionUpdateParams;
-        }
-        export class SubscriptionUpdateParams {
-            public static newBuilder(): SubscriptionUpdateParamsBuilder;
-        }
+    export interface SubscriptionUpdateParamsBuilder {
+        setOldPurcchaseToken: (purchaseToken: string) => SubscriptionUpdateParamsBuilder;
+        setOriginalExternalTransactionId: (externalTransactionId: string) => SubscriptionUpdateParamsBuilder;
+        setSubscriptionReplacementMode: (subscriptionReplacementMode: number) => SubscriptionUpdateParamsBuilder;
+        build: () => SubscriptionUpdateParams;
+    }
+    export class SubscriptionUpdateParams {
+        newBuilder(): () => SubscriptionUpdateParamsBuilder;
     }
 
     export class BillingFlowParams {
+        static ProductDetailsParams: jsb.ProductDetailsParams;
+        static SubscriptionUpdateParams: jsb.SubscriptionUpdateParams;
         static Builder: BillingFlowParamsBuilder;
         public static newBuilder(): BillingFlowParamsBuilder;
     }
@@ -1135,8 +1135,8 @@ declare namespace jsb {
         setIsOfferPersonalized: (isOfferPersonalized: boolean) => BillingFlowParamsBuilder;
         setObfuscatedAccountId: (obfuscatedAccountid: string) => BillingFlowParamsBuilder;
         setObfuscatedProfileId: (obfuscatedProfileId: string) => BillingFlowParamsBuilder;
-        setProductDetailsParamsList: (userChoiceBillingListener: BillingFlowParams.ProductDetailsParams[]) => BillingFlowParamsBuilder;
-        setSubscriptionUpdateParams: (userChoiceBillingListener: BillingFlowParams.SubscriptionUpdateParams) => BillingFlowParamsBuilder;
+        setProductDetailsParamsList: (userChoiceBillingListener: ProductDetailsParams[]) => BillingFlowParamsBuilder;
+        setSubscriptionUpdateParams: (userChoiceBillingListener: SubscriptionUpdateParams) => BillingFlowParamsBuilder;
         build: () => BillingFlowParams;
     }
 
