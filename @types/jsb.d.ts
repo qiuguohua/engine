@@ -1111,7 +1111,7 @@ declare namespace jsb {
         build: () => ProductDetailsParams;
     }
     export class ProductDetailsParams {
-        newBuilder: () => ProductDetailsParamsBuilder;
+        static newBuilder: () => ProductDetailsParamsBuilder;
     }
 
     export interface SubscriptionUpdateParamsBuilder {
@@ -1121,12 +1121,12 @@ declare namespace jsb {
         build: () => SubscriptionUpdateParams;
     }
     export class SubscriptionUpdateParams {
-        newBuilder(): () => SubscriptionUpdateParamsBuilder;
+        static newBuilder(): () => SubscriptionUpdateParamsBuilder;
     }
 
     export class BillingFlowParams {
-        static ProductDetailsParams: jsb.ProductDetailsParams;
-        static SubscriptionUpdateParams: jsb.SubscriptionUpdateParams;
+        static ProductDetailsParams: typeof jsb.ProductDetailsParams;
+        static SubscriptionUpdateParams: typeof jsb.SubscriptionUpdateParams;
         static Builder: BillingFlowParamsBuilder;
         public static newBuilder(): BillingFlowParamsBuilder;
     }

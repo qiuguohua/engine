@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 /****************************************************************************
  Copyright (c) 2024 Xiamen Yaji Software Co., Ltd.
 
@@ -31,11 +32,11 @@ export namespace google {
 
         export const PendingPurchasesParams = jsb.PendingPurchasesParams;
 
-        export const ProductDetailsParams = jsb.ProductDetailsParams;
+        // export const ProductDetailsParams = jsb.ProductDetailsParams;
         export const QueryProductDetailsParams = jsb.QueryProductDetailsParams;
 
         export const Product = jsb.Product;
-        export const BillingFlowParams: typeof jsb.BillingFlowParams = jsb.BillingFlowParams;
+        export const BillingFlowParams = jsb.BillingFlowParams;
 
         export const ConsumeParams = jsb.ConsumeParams;
         export const AcknowledgePurchaseParams = jsb.AcknowledgePurchaseParams;
@@ -67,10 +68,9 @@ export declare namespace google {
         export type Product = jsb.Product;
         export namespace BillingFlowParams {
             //export type Builder = typeof jsb.BillingFlowParamsBuilder;
-            export type SubscriptionUpdateParams = typeof jsb.SubscriptionUpdateParams;
-            export type ProductDetailsParams = typeof jsb.ProductDetailsParams;
+            export type SubscriptionUpdateParams = jsb.SubscriptionUpdateParams;
+            export type ProductDetailsParams = jsb.ProductDetailsParams;
         }
-        export type BillingFlowParams = typeof jsb.BillingFlowParams;
         export type ConsumeParams = jsb.ConsumeParams;
         export type AcknowledgePurchaseParams = jsb.AcknowledgePurchaseParams;
         export type QueryPurchasesParams = jsb.QueryPurchasesParams;
