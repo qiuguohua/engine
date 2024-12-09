@@ -24,6 +24,7 @@
 *****************************************************************************/
 
 import { EventTarget } from '../../../cocos/core/event';
+import './billing-enum';
 
 export namespace google {
     export namespace billing {
@@ -61,37 +62,25 @@ export declare namespace google {
         export type AlternativeBillingOnlyReportingDetails = jsb.AlternativeBillingOnlyReportingDetails;
         export type ExternalOfferReportingDetails = jsb.ExternalOfferReportingDetails;
         export type InAppMessageResult = jsb.InAppMessageResult;
-        export type BillingClient = jsb.BillingClient;
+
         export type BillingResult = jsb.BillingResult;
         export type PendingPurchasesParams = jsb.PendingPurchasesParams;
         export type QueryProductDetailsParams = jsb.QueryProductDetailsParams;
         export type Product = jsb.Product;
+
+        export type BillingClient = jsb.BillingClient;
         export namespace BillingFlowParams {
-            //export type Builder = typeof jsb.BillingFlowParamsBuilder;
+            export type Builder = jsb.BillingFlowParamsBuilder;
             export type SubscriptionUpdateParams = jsb.SubscriptionUpdateParams;
             export type ProductDetailsParams = jsb.ProductDetailsParams;
         }
+
+        export type BillingFlowParams = jsb.BillingFlowParams;
         export type ConsumeParams = jsb.ConsumeParams;
         export type AcknowledgePurchaseParams = jsb.AcknowledgePurchaseParams;
         export type QueryPurchasesParams = jsb.QueryPurchasesParams;
         export type InAppMessageParams = jsb.InAppMessageParams;
         export type GetBillingConfigParams = jsb.GetBillingConfigParams;
+
     }
 }
-// export declare namespace BillingFlowParams {
-//     export type Builder = jsb.BillingFlowParamsBuilder;
-//     export type SubscriptionUpdateParams = jsb.SubscriptionUpdateParams;
-//     export type ProductDetailsParams = jsb.ProductDetailsParams;
-// }
-// export type  BillingFlowParams = jsb.BillingFlowParams;
-// export const BillingFlowParams: typeof jsb.BillingFlowParams = jsb.BillingFlowParams;
-
-// export declare namespace google {
-//     export namespace BillingFlowParams {
-//         export type Builder = jsb.BillingFlowParamsBuilder;
-//         export type SubscriptionUpdateParams = jsb.SubscriptionUpdateParams;
-//         export type ProductDetailsParams = jsb.ProductDetailsParams;
-//     }
-//     export type  BillingFlowParams = jsb.BillingFlowParams;
-//     export const BillingFlowParams: typeof jsb.BillingFlowParams = jsb.BillingFlowParams;
-// }

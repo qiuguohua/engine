@@ -317,11 +317,33 @@ cc::InAppMessageResult* GoogleBillingToNative::toInAppMessageResult(JNIEnv* env,
     return inAppMessageResult;
 }
 
+cc::UserChoiceDetails::Product* GoogleBillingToNative::toUserChoiceDetailsProduct(JNIEnv* env, jobject obj) {
+    jclass clazz = env->GetObjectClass(obj);
+    auto* product = new cc::UserChoiceDetails::Product();
+    product->_hashCode = callIntMethod(env, clazz, obj, "hashCode");
+    product->_id = callStringMethod(env, clazz, obj, "getId");
+    product->_offerToken = callStringMethod(env, clazz, obj, "getOfferToken");
+    product->_type = callStringMethod(env, clazz, obj, "getType");
+    product->_toStr = callStringMethod(env, clazz, obj, "toString");
+    return product;
+}
+
 cc::UserChoiceDetails* GoogleBillingToNative::toUserChoiceDetails(JNIEnv* env, jobject obj) {
     jclass clazz = env->GetObjectClass(obj);
     auto* userChoiceDetails = new cc::UserChoiceDetails();
-    // userChoiceDetails->_responseCode = callIntMethod(env, clazz, obj, "getResponseCode");
-    // userChoiceDetails->_purchaseToken = callStringMethod(env, clazz, obj, "getPurchaseToken");
+    userChoiceDetails->_externalTransactionToken =  callStringMethod(env, clazz, obj, "getExternalTransactionToken");
+    userChoiceDetails->_originalExternalTransactionId =  callStringMethod(env, clazz, obj, "getOriginalExternalTransactionId");
+
+    jmethodID methodId = env->GetMethodID(clazz, "getProducts", "()Ljava/util/List;");
+    jobject listObj = env->CallObjectMethod(obj, methodId);
+    jclass listClazz = env->GetObjectClass(listObj);
+    jmethodID listGetMethod = env->GetMethodID(listClazz, "get", "(I)Ljava/lang/Object;");
+    int size = callIntMethod(env, listClazz, listObj, "size");
+    auto& products = userChoiceDetails->_products;
+    for (int i = 0; i < size; ++i) {
+        jobject productObj = env->CallObjectMethod(listObj, listGetMethod, i);
+        products.push_back(toUserChoiceDetailsProduct(env, productObj));
+    }
     return userChoiceDetails;
 }
 
@@ -392,59 +414,83 @@ jobject GoogleBillingToNative::newProductDetailsParamsListObject(std::vector<Bil
     return list;
 }
 
-// jobject GoogleBillingToNative::newPendingPurchasesParamsObject(PendingPurchasesParams* params) {
-//     auto* env = JniHelper::getEnv();
-//     cc::JniMethodInfo t;
-//     cc::JniHelper::getStaticMethodInfo(t, "com/android/billingclient/api/PendingPurchasesParams", "newBuilder", "()Lcom/android/billingclient/api/PendingPurchasesParams$Builder;");
-//     jobject builder = t.env->CallStaticObjectMethod(t.classID, t.methodID);
-//     jclass builderClass = env->GetObjectClass(builder);
+jobject GoogleBillingToNative::newPendingPurchasesParamsObject(PendingPurchasesParams* params) {
+    auto* env = JniHelper::getEnv();
+    cc::JniMethodInfo t;
+    cc::JniHelper::getStaticMethodInfo(t, "com/android/billingclient/api/PendingPurchasesParams", "newBuilder", "()Lcom/android/billingclient/api/PendingPurchasesParams$Builder;");
+    jobject builder = t.env->CallStaticObjectMethod(t.classID, t.methodID);
+    jclass builderClass = env->GetObjectClass(builder);
 
-//     if(params->_enableOneTimeProducts) {
-//         jmethodID methodId = env->GetMethodID(builderClass, "enableAlternativeBillingOnly", "()Lcom/android/billingclient/api/BillingClient$Builder;");
-//         env->CallObjectMethod(builder, methodId);
-//     }
-//     if(params->_enablePrepaidPlans) {
-//         jmethodID methodId = env->GetMethodID(builderClass, "enableAlternativeBillingOnly", "()Lcom/android/billingclient/api/BillingClient$Builder;");
-//         env->CallObjectMethod(builder, methodId);
-//     }
-// }
+    if(params->_enableOneTimeProducts) {
+        jmethodID methodId = env->GetMethodID(builderClass, "enableOneTimeProducts", "()Lcom/android/billingclient/api/PendingPurchasesParams$Builder;");
+        env->CallObjectMethod(builder, methodId);
+    }
+    if(params->_enablePrepaidPlans) {
+        jmethodID methodId = env->GetMethodID(builderClass, "enablePrepaidPlans", "()Lcom/android/billingclient/api/PendingPurchasesParams$Builder;");
+        env->CallObjectMethod(builder, methodId);
+    }
 
-// jobject GoogleBillingToNative::newProductDetailsParamsObject(BillingClient::Builder* params) {
-//     auto* env = JniHelper::getEnv();
-//     cc::JniMethodInfo t;
-//     cc::JniHelper::getStaticMethodInfo(t, "com/android/billingclient/api/BillingClient", "newBuilder", "()Lcom/android/billingclient/api/BillingClient$Builder;");
-//     jobject builder = t.env->CallStaticObjectMethod(t.classID, t.methodID);
-//     jclass builderClass = env->GetObjectClass(builder);
+    jmethodID buildMethodId = env->GetMethodID(builderClass, "build", "()Lcom/android/billingclient/api/PendingPurchasesParams;");
+    return env->CallObjectMethod(builder, buildMethodId);
+}
 
-//     if(params->_enableAlternativeBillingOnly) {
-//         jmethodID methodId = env->GetMethodID(builderClass, "enableAlternativeBillingOnly", "()Lcom/android/billingclient/api/BillingClient$Builder;");
-//         env->CallObjectMethod(builder, methodId);
-//     }
+jobject GoogleBillingToNative::newCustomListenerObject(int tag, const std::string& functionName) {
+    auto* env = JniHelper::getEnv();
+    std::string listener = std::string(JCLS_BILLING) + "$" + functionName;
 
-//     if(params->_enableExternalOffer) {
-//         jmethodID methodId = env->GetMethodID(builderClass, "enableExternalOffer", "()Lcom/android/billingclient/api/BillingClient$Builder;");
-//         env->CallObjectMethod(builder, methodId);
-//     }
+    cc::JniMethodInfo t;
+    cc::JniHelper::getMethodInfo(t, listener.c_str(), "<init>", "(I)V");
 
-//     if(params->_enableExternalOffer) {
-//         jmethodID methodId = env->GetMethodID(builderClass, "enableExternalOffer", "()Lcom/android/billingclient/api/BillingClient$Builder;");
-//         env->CallObjectMethod(builder, methodId);
-//     }
+    return t.env->NewObject(t.classID, t.methodID, tag);
+}
 
-//     if(params->_pendingPurchasesParams) {
+jobject GoogleBillingToNative::newPurchaseUpdateListenerObject(int tag) {
+    return newCustomListenerObject(tag, "BillingClientPurchasesUpdatedListener");
+}
 
-//     }
+jobject GoogleBillingToNative::newUserChoiceBillingListenerObj(int tag) {
+    return newCustomListenerObject(tag, "BillingClientUserChoiceBillingListener");
+}
 
 
+jobject GoogleBillingToNative::newBillingClientBuilderObject(int tag, BillingClient::Builder* params) {
+    auto* env = JniHelper::getEnv();
+    cc::JniMethodInfo t;
+    auto *javaGameActivity = cc::JniHelper::getActivity();
+    cc::JniHelper::getStaticMethodInfo(t, "com/android/billingclient/api/BillingClient", "newBuilder", "(Landroid/content/Context;)Lcom/android/billingclient/api/BillingClient$Builder;");
+    jobject builder = t.env->CallStaticObjectMethod(t.classID, t.methodID, javaGameActivity);
+    jclass builderClass = env->GetObjectClass(builder);
 
-//     cc::JniMethodInfo t2;
-//     cc::JniHelper::getStaticMethodInfo(t2, JCLS_BILLING, "getProductDetailsObject", "(II)Lcom/android/billingclient/api/ProductDetails;");
-//     jobject productDetailsObject = t2.env->CallStaticObjectMethod(t2.classID, t2.methodID, 0, params->_productDetails->_id);
-//     jmethodID setProductDetailsMethodId = env->GetMethodID(builderClass, "setProductDetails", "(Lcom/android/billingclient/api/ProductDetails;)Lcom/android/billingclient/api/BillingFlowParams$ProductDetailsParams$Builder;");
-//     env->CallObjectMethod(builder, setProductDetailsMethodId, productDetailsObject);
+    if(params->_enableAlternativeBillingOnly) {
+        jmethodID methodId = env->GetMethodID(builderClass, "enableAlternativeBillingOnly", "()Lcom/android/billingclient/api/BillingClient$Builder;");
+        env->CallObjectMethod(builder, methodId);
+    }
 
-//     jmethodID buildMethodId = env->GetMethodID(builderClass, "build", "()Lcom/android/billingclient/api/BillingFlowParams$ProductDetailsParams;");
-//     return env->CallObjectMethod(builder, buildMethodId);
-// }
+    if(params->_enableExternalOffer) {
+        jmethodID methodId = env->GetMethodID(builderClass, "enableExternalOffer", "()Lcom/android/billingclient/api/BillingClient$Builder;");
+        env->CallObjectMethod(builder, methodId);
+    }
+
+
+    if(params->_pendingPurchasesParams) {
+        jobject pendingPurchasesParamsObj = newPendingPurchasesParamsObject(params->_pendingPurchasesParams);
+        jmethodID methodId = env->GetMethodID(builderClass, "enablePendingPurchases", "(Lcom/android/billingclient/api/PendingPurchasesParams;)Lcom/android/billingclient/api/BillingClient$Builder;");
+        env->CallObjectMethod(builder, methodId, pendingPurchasesParamsObj);
+    }
+
+    if(params->purchasesUpdatedListener) {
+        jobject listenerObj = newPurchaseUpdateListenerObject(tag);
+        jmethodID methodId = env->GetMethodID(builderClass, "setListener", "(Lcom/android/billingclient/api/PurchasesUpdatedListener;)Lcom/android/billingclient/api/BillingClient$Builder;");
+        env->CallObjectMethod(builder, methodId, listenerObj);
+    }
+
+    if(params->userChoiceBillingListener) {
+        jobject userChoiceBillingListenerObj = newUserChoiceBillingListenerObj(tag);
+        jmethodID methodId = env->GetMethodID(builderClass, "enableUserChoiceBilling", "(Lcom/android/billingclient/api/UserChoiceBillingListener;)Lcom/android/billingclient/api/BillingClient$Builder;");
+        env->CallObjectMethod(builder, methodId, userChoiceBillingListenerObj);
+    }
+
+    return builder;
+}
 
 } // namespace cc

@@ -467,7 +467,7 @@ public:
         std::string getType() const {
             return _offerToken;
         }
-        std::string toString() const {
+        std::string toStr() const {
             return _toStr;
         }
         bool equals(const Product& p) {
@@ -478,6 +478,7 @@ public:
         }
 
     private:
+        friend class GoogleBillingToNative;
         int _hashCode{0};
         std::string _id;
         std::string _type;
@@ -544,6 +545,7 @@ private:
     }
 
 private:
+    friend class GoogleBillingToNative;
     friend class BillingClient;
     bool _enableOneTimeProducts{false};
     bool _enablePrepaidPlans{false};
@@ -956,6 +958,7 @@ public:
 
     private:
         friend class BillingClient;
+        friend class GoogleBillingToNative;
         bool _enableAlternativeBillingOnly;
         bool _enableExternalOffer;
         PendingPurchasesParams* _pendingPurchasesParams;
@@ -965,8 +968,7 @@ public:
     static Builder* newBuilder() {
         return new Builder();
     }
-    BillingClient(Builder* builder);
-    ~BillingClient();
+
     void startConnection(se::Object* listener);
     void endConnection();
     int getConnectionState() const;
@@ -986,7 +988,9 @@ public:
     BillingResult* showAlternativeBillingOnlyInformationDialog(se::Object* listener);
     BillingResult* showExternalOfferInformationDialog(se::Object* listener);
     BillingResult* showInAppMessages(InAppMessageParams* params, se::Object* listener);
-
+private:
+    BillingClient(Builder* builder);
+    ~BillingClient();
 private:
     friend class GoogleBillingHelper;
     int _tag{-1};

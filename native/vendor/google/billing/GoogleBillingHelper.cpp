@@ -87,18 +87,15 @@ template void callJSfunc(se::Object* obj, const char*, BillingResult*&&, Alterna
 template void callJSfunc(se::Object* obj, const char*, BillingResult*&&, ExternalOfferReportingDetails*&&);
 template void callJSfunc(se::Object* obj, const char*, InAppMessageResult*&&);
 
-int GoogleBillingHelper::createBillingClient(bool enableAlternativeBillingOnly,
-                                            bool enableExternalOffer,
-                                            bool enableOneTimeProducts,
-                                            bool enablePrepaidPlans) {
-    int tag =  JniHelper::callStaticIntMethod(JCLS_BILLING,
-                                          "createBillingClient",
-                                          enableAlternativeBillingOnly,
-                                          enableExternalOffer,
-                                          enableOneTimeProducts,
-                                          enablePrepaidPlans);
-    auto* bb = cc::BillingFlowParams::newBuilder()->setIsOfferPersonalized(false).setObfuscatedAccountId("qqq").setObfuscatedProfileId("ddd").build();
-    //GoogleBillingHelper::launchBillingFlow(tag, bb);
+int GoogleBillingHelper::createBillingClient(void* params) {
+    int tag = JniHelper::callStaticIntMethod(JCLS_BILLING, "newTag");
+    auto* builder = reinterpret_cast<BillingClient::Builder*>(params);
+    jobject buildObj = GoogleBillingToNative::newBillingClientBuilderObject(tag, builder);
+
+    cc::JniMethodInfo t;
+    cc::JniHelper::getStaticMethodInfo(t, JCLS_BILLING, "createBillingClient", "(ILcom/android/billingclient/api/BillingClient$Builder;)V");
+    t.env->CallStaticVoidMethod(t.classID, t.methodID, tag, buildObj);
+
     return tag;
 }
 

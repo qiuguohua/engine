@@ -36,19 +36,7 @@ BillingClient::BillingClient(Builder* builder) {
     this->purchasesUpdatedListener = builder->purchasesUpdatedListener;
     this->userChoiceBillingListener = builder->userChoiceBillingListener;
 
-    if (this->_pendingPurchasesParams) {
-        _tag = GoogleBillingHelper::createBillingClient(
-            builder->_enableAlternativeBillingOnly,
-            builder->_enableExternalOffer,
-            builder->_pendingPurchasesParams->_enableOneTimeProducts,
-            builder->_pendingPurchasesParams->_enablePrepaidPlans);
-    } else {
-        _tag = GoogleBillingHelper::createBillingClient(
-            builder->_enableAlternativeBillingOnly,
-            builder->_enableExternalOffer,
-            false,
-            false);
-    }
+    _tag = GoogleBillingHelper::createBillingClient(builder);
 
     CC_ASSERT(_tag >= 0);
     GoogleBillingManager::getInstance()->pushBillingClient(_tag, this);

@@ -63,6 +63,8 @@ import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.UserChoiceDetails;
 import com.cocos.lib.GlobalObject;
 import com.cocos.lib.CocosHelper;
+import com.google.android.gms.common.internal.Asserts;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,33 +83,9 @@ public class GoogleBilling implements PurchasesUpdatedListener, UserChoiceBillin
      */
     private BillingClient _billingClient;
 
-    public GoogleBilling(boolean enableAlternativeBillingOnly,
-                         boolean enableExternalOffer,
-                         boolean enableOneTimeProducts,
-                         boolean enablePrepaidPlans,
-                         int tag) {
+    public GoogleBilling(int tag, BillingClient.Builder builder) {
+        assert tag >= 0 && builder != null;
         this._tag = tag;
-        BillingClient.Builder builder = BillingClient.newBuilder(GlobalObject.getActivity());
-        // Callbacks are set by default, if ts doesn't set callbacks, nothing is done after the callbacks
-        builder.setListener(this);
-        builder.enableUserChoiceBilling(this);
-
-        if(enableAlternativeBillingOnly) {
-            builder.enableAlternativeBillingOnly();
-        }
-        if(enableExternalOffer) {
-            builder.enableExternalOffer();
-        }
-        if(enableOneTimeProducts || enablePrepaidPlans) {
-            PendingPurchasesParams.Builder tempBuilder = PendingPurchasesParams.newBuilder();
-            if(enableOneTimeProducts) {
-                tempBuilder.enableOneTimeProducts();
-            }
-            if(enablePrepaidPlans) {
-                tempBuilder.enablePrepaidPlans();
-            }
-            builder.enablePendingPurchases(tempBuilder.build());
-        }
         _billingClient = builder.build();
     }
 
@@ -241,39 +219,6 @@ public class GoogleBilling implements PurchasesUpdatedListener, UserChoiceBillin
     public void launchBillingFlow(BillingFlowParams params) {
         _billingClient.launchBillingFlow(GlobalObject.getActivity(), params);
     }
-//    public void launchBillingFlow(int[] productDetailsHashs, String selectedOfferToken) {
-//        if(!isConnected()) {
-//            Log.w(TAG, "Must be connected before use this interface");
-//            return;
-//        }
-//
-//        List<BillingFlowParams.ProductDetailsParams> productDetailsParamsList = new ArrayList<>();
-//        for (int productDetailsHash: productDetailsHashs) {
-//            if(_productDetails.containsKey(productDetailsHash)) {
-//                if(selectedOfferToken.isEmpty()) {
-//                    productDetailsParamsList.add(
-//                        BillingFlowParams.ProductDetailsParams.newBuilder().setProductDetails(_productDetails.get(productDetailsHash)).build()
-//                    );
-//                } else {
-//                    productDetailsParamsList.add(
-//                        BillingFlowParams.ProductDetailsParams.newBuilder()
-//                            .setProductDetails(_productDetails.get(productDetailsHash))
-//                            .setOfferToken(selectedOfferToken)
-//                            .build()
-//                    );
-//                }
-//            } else {
-//                Log.w(TAG, "Purchased product ID does not exist");
-//            }
-//
-//        }
-//        if(productDetailsParamsList.isEmpty()) {
-//            Log.w(TAG, "Purchased product ID does not exist");
-//            return;
-//        }
-//        BillingFlowParams params = BillingFlowParams.newBuilder().setProductDetailsParamsList(productDetailsParamsList).build();
-//        _billingClient.launchBillingFlow(GlobalObject.getActivity(), params);
-//    }
 
     public void queryPurchasesAsync(String type, @NonNull PurchasesResponseListener listener) {
         if(!isConnected()) {

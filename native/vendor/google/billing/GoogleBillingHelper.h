@@ -51,10 +51,7 @@ class AcknowledgePurchaseParams;
 
 class CC_DLL GoogleBillingHelper {
 public:
-    static int createBillingClient(bool enableAlternativeBillingOnly,
-                                   bool enableExternalOffer,
-                                   bool enableOneTimeProducts,
-                                   bool enablePrepaidPlans);
+    static int createBillingClient(void* builder);
     static void removeBillingClient(int tag);
     static void removeProductDetails(int tag, int productDetailsID);
     static void removePurchase(int tag, int purchaseID);

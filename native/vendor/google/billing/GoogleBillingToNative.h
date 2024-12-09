@@ -54,7 +54,15 @@ public:
     static jobject newSubscriptionUpdateParamsObject(BillingFlowParams::SubscriptionUpdateParams* params);
     static jobject newProductDetailsParamsObject(BillingFlowParams::ProductDetailsParams* params);
     static jobject newProductDetailsParamsListObject(std::vector<BillingFlowParams::ProductDetailsParams*> listParams);
+    static UserChoiceDetails::Product* toUserChoiceDetailsProduct(JNIEnv* env, jobject obj);
     static UserChoiceDetails* toUserChoiceDetails(JNIEnv* env, jobject obj);
+    
+    static jobject newPurchaseUpdateListenerObject(int tag);
+    static jobject newUserChoiceBillingListenerObj(int tag);
+    static jobject newPendingPurchasesParamsObject(PendingPurchasesParams* params);
+    static jobject newBillingClientBuilderObject(int tag, BillingClient::Builder* params);
+private:
+    static jobject newCustomListenerObject(int tag, const std::string& functionName);
 };
 
 } // namespace cc

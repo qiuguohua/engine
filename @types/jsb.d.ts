@@ -358,8 +358,18 @@ declare namespace jsb {
         onThermalStatusChanged?: (previousStatus: number, newStatus: number, statusMin: number, statusMax: number) => void;
     } | undefined;
 
-    export interface UserChoiceDetails {
-
+    export interface UserChoiceDetailsProduct {
+        hashCode(): number;
+        getId(): string;
+        getOfferToken(): string;
+        getType(): string;
+        toStr(): string;
+        equals(product: Product): boolean;
+    }
+    export class UserChoiceDetails {
+        getExternalTransactionToken(): string;
+        getOriginalExternalTransactionId(): string;
+        getProducts(): UserChoiceDetailsProduct[];
     }
 
     /**
@@ -751,6 +761,7 @@ declare namespace jsb {
     }
 
     export class PendingPurchasesParams {
+        private constructor();
         public static newBuilder(): PendingPurchasesParamsBuilder;
     }
 
@@ -760,6 +771,7 @@ declare namespace jsb {
         build: () => Product;
     }
     export class Product {
+        private constructor();
         public static newBuilder(): ProductBuilder;
     }
 
@@ -768,6 +780,7 @@ declare namespace jsb {
         build: () => QueryProductDetailsParams;
     }
     export class QueryProductDetailsParams {
+        private constructor();
         public static newBuilder(): QueryProductDetailsParamsBuilder;
     }
 
@@ -855,7 +868,7 @@ declare namespace jsb {
      * @zh
      * Billing client的连接状态
      */
-    enum ConnectionState {
+    export enum ConnectionState {
         /**
          * @en
          * This client was not yet connected to billing service or was already closed.
@@ -1111,6 +1124,7 @@ declare namespace jsb {
         build: () => ProductDetailsParams;
     }
     export class ProductDetailsParams {
+        private constructor();
         static newBuilder: () => ProductDetailsParamsBuilder;
     }
 
@@ -1121,6 +1135,7 @@ declare namespace jsb {
         build: () => SubscriptionUpdateParams;
     }
     export class SubscriptionUpdateParams {
+        private constructor();
         static newBuilder(): () => SubscriptionUpdateParamsBuilder;
     }
 
@@ -1128,6 +1143,7 @@ declare namespace jsb {
         static ProductDetailsParams: typeof jsb.ProductDetailsParams;
         static SubscriptionUpdateParams: typeof jsb.SubscriptionUpdateParams;
         static Builder: BillingFlowParamsBuilder;
+        private constructor();
         public static newBuilder(): BillingFlowParamsBuilder;
     }
 
@@ -1145,6 +1161,7 @@ declare namespace jsb {
         build: () => ConsumeParams;
     }
     export class ConsumeParams {
+        private constructor();
         public static newBuilder(): ConsumeParamsBuilder;
     }
     export interface AcknowledgePurchaseParamsBuilder {
@@ -1152,6 +1169,7 @@ declare namespace jsb {
         build: () => AcknowledgePurchaseParams;
     }
     export class AcknowledgePurchaseParams {
+        private constructor();
         public static newBuilder(): AcknowledgePurchaseParamsBuilder;
     }
 
@@ -1160,6 +1178,7 @@ declare namespace jsb {
         build: () => QueryPurchasesParams;
     }
     export class QueryPurchasesParams {
+        private constructor();
         public static newBuilder(): QueryPurchasesParamsBuilder;
     }
 
@@ -1169,6 +1188,7 @@ declare namespace jsb {
         build: () => InAppMessageParams;
     }
     export class InAppMessageParams {
+        private constructor();
         public static newBuilder(): InAppMessageParamsBuilder;
     }
 
@@ -1176,9 +1196,11 @@ declare namespace jsb {
         build: () => GetBillingConfigParams;
     }
     export class GetBillingConfigParams {
+        private constructor();
         public static newBuilder(): GetBillingConfigParamsBuilder;
     }
     export class BillingClient {
+        private constructor();
         static Builder: BillingFlowParamsBuilder;
         static ConnectionState: typeof jsb.ConnectionState;
         static BillingResponseCode: typeof jsb.BillingResponseCode;

@@ -34,6 +34,7 @@ import com.android.billingclient.api.AlternativeBillingOnlyAvailabilityListener;
 import com.android.billingclient.api.AlternativeBillingOnlyInformationDialogListener;
 import com.android.billingclient.api.AlternativeBillingOnlyReportingDetails;
 import com.android.billingclient.api.AlternativeBillingOnlyReportingDetailsListener;
+import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingConfig;
 import com.android.billingclient.api.BillingConfigResponseListener;
 import com.android.billingclient.api.BillingFlowParams;
@@ -68,19 +69,17 @@ public class GoogleBillingHelper {
     private static SparseArray<GoogleBilling> googleBillings = new SparseArray<GoogleBilling>();
     private static int billingTag = 0;
 
-    public static int createBillingClient(boolean enableAlternativeBillingOnly,
-                                          boolean enableExternalOffer,
-                                          boolean enableOneTimeProducts,
-                                          boolean enablePrepaidPlans) {
-        final int index = billingTag;
+    public static int newTag() {
+        return billingTag++;
+    }
+    public static void createBillingClient(int tag, BillingClient.Builder builder) {
         GlobalObject.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                GoogleBilling billing = new GoogleBilling(enableAlternativeBillingOnly, enableExternalOffer, enableOneTimeProducts, enablePrepaidPlans, index);
-                googleBillings.put(index, billing);
+                GoogleBilling billing = new GoogleBilling(tag, builder);
+                googleBillings.put(tag, billing);
             }
         });
-        return billingTag++;
     }
 
     public static int removeBillingClient(int tag) {
@@ -94,7 +93,7 @@ public class GoogleBillingHelper {
         return billingTag++;
     }
 
-    class BillingClientPurchasesUpdatedListener implements PurchasesUpdatedListener {
+    public static final class BillingClientPurchasesUpdatedListener implements PurchasesUpdatedListener {
         private int _tag;
         BillingClientPurchasesUpdatedListener(int tag) {
             this._tag = tag;
@@ -115,7 +114,7 @@ public class GoogleBillingHelper {
         }
     }
 
-    class BillingClientUserChoiceBillingListener implements UserChoiceBillingListener {
+    public static final class BillingClientUserChoiceBillingListener implements UserChoiceBillingListener {
         private int _tag;
         BillingClientUserChoiceBillingListener(int tag) {
             this._tag = tag;
