@@ -500,7 +500,8 @@ declare namespace jsb {
      * @en Represents the details of a one time or subscription product.
      * @zh 代表一次性或订阅产品的详细信息。
      */
-    export interface ProductDetails {
+    export class ProductDetails {
+        static RecurrenceMode: jsb.RecurrenceMode;
         equals(other: ProductDetails): boolean;
         /**
          * @en Hash code
@@ -583,11 +584,45 @@ declare namespace jsb {
         getProducts(): string[];
     }
 
+        /**
+         * @en
+         * Possible purchase states.
+         *
+         * @zh
+         * 可能的购买状态。
+         */
+        export enum PurchaseState {
+            /**
+             * @en
+             * Purchase is pending and not yet completed to be processed by your app.
+             *
+             * @zh
+             * 购买处于待处理状态且尚未完成，无法由您的应用程序处理。
+             */
+            PENDING = 2,
+            /**
+             * @en
+             * Purchase is completed..
+             *
+             * @zh
+             * 购买完成。
+             */
+            PURCHASED = 1,
+            /**
+             * @en
+             * Purchase with unknown state.
+             *
+             * @zh
+             * 未知状态
+             */
+            UNSPECIFIED_STATE = 0,
+        }
     /**
      * @en Represents an in-app billing purchase.
      * @zh 代表应用内billing购买。
      */
-    export interface Purchase {
+    export class Purchase {
+        static PurchaseState: typeof jsb.PurchaseState;
         /**
          * @en One of PurchaseState indicating the state of the purchase.
          * @zh PurchaseState表示购买状态的其中一个值。
@@ -780,6 +815,7 @@ declare namespace jsb {
         build: () => QueryProductDetailsParams;
     }
     export class QueryProductDetailsParams {
+        static Product: typeof jsb.Product;
         private constructor();
         public static newBuilder(): QueryProductDetailsParamsBuilder;
     }
@@ -1118,6 +1154,153 @@ declare namespace jsb {
         SUBS = 'subs'
     }
 
+    /**
+     * @en
+     * A high-level category of the in-app message.
+     * One category can be mapped to multiple in-app messages.
+     *
+     * @zh
+     * 应用程序内信息的高级类别。
+     * 一个类别可映射到多个应用程序内信息。
+     */
+    export enum InAppMessageCategoryId {
+        /**
+         * @en
+         * A Product type for Android apps in-app products.
+         *
+         * @zh
+         * 应用程序中未知的消息类别 ID
+         */
+        UNKNOWN_IN_APP_MESSAGE_CATEGORY_ID = 0,
+        /**
+         * @en
+         * The in-app messages of this category are for transactional purpose, such as payment issues.
+         *
+         * @zh
+         * 这类应用内信息用于交易目的，如支付问题。
+         */
+        TRANSACTIONAL = 2
+    }
+
+    /**
+     * @en
+     * Supported replacement modes to replace an existing subscription with a new one.
+     *
+     * @zh
+     * 支持替换模式，可将现有订购替换为新订购。
+     */
+    export enum ReplacementMode {
+        /**
+         * @en
+         * Unknown replacement mode.
+         *
+         * @zh
+         * 未知替换模式
+         */
+        UNKNOWN_REPLACEMENT_MODE = 0,
+        /**
+         * @en
+         * The new plan takes effect immediately, and the remaining time will be prorated and credited to the user.
+         *
+         * @zh
+         * 新计划立即生效，剩余时间将按比例计入用户贷方。
+         */
+        WITH_TIME_PRORATION = 1,
+        /**
+         * @en
+         * The new plan takes effect immediately, and the billing cycle remains the same.
+         *
+         * @zh
+         * 新计划立即生效，计费周期保持不变。
+         */
+        CHARGE_PRORATED_PRICE = 2,
+        /**
+         * @en
+         * The new plan takes effect immediately, and the new price will be charged on next recurrence time.
+         *
+         * @zh
+         * 新计划立即生效，新价格将在下次复诊时收取。
+         */
+        WITHOUT_PRORATION = 3,
+        /**
+         * @en
+         * Replacement takes effect immediately, and the user is charged full price of new plan and
+         * is given a full billing cycle of subscription, plus remaining prorated time from the old plan.
+         *
+         * @zh
+         * 替换立即生效，用户将被收取新计划的全额费用，并获得一个完整的计费周期，加上旧计划按比例计算的剩余时间。
+         */
+        CHARGE_FULL_PRICE = 5,
+        /**
+         * @en
+         * The new purchase takes effect immediately, the new plan will take effect when the old item expires.
+         *
+         * @zh
+         * 新购买立即生效，新计划将在旧项目到期时生效。
+         */
+        DEFERRED = 6,
+    }
+
+    /**
+     * @en
+     * Possible response codes.
+     *
+     * @zh
+     * 可能的响应代码。
+     */
+    export enum InAppMessageResponseCode {
+        /**
+         * @en
+         * The flow has finished and there is no action needed from developers.
+         *
+         * @zh
+         * 流程已经结束，开发人员无需采取任何行动。
+         */
+        NO_ACTION_NEEDED = 0,
+        /**
+         * @en
+         * The subscription status changed.
+         *
+         * @zh
+         * 订阅状态已更改。
+         */
+        SUBSCRIPTION_STATUS_UPDATED = 1
+    }
+
+    /**
+     * @en
+     * Recurrence mode of the pricing phase.
+     *
+     * @zh
+     * 定价阶段的复现模式。
+     */
+    export enum RecurrenceMode {
+        /**
+         * @en
+         * The billing plan payment recurs for infinite billing periods unless cancelled.
+         *
+         * @zh
+         * 除非取消，否则billing计划付款将无限期地重复。
+         */
+        INFINITE_RECURRING = 1,
+        /**
+         * @en
+         * The billing plan payment recurs for a fixed number of billing period set in billingCycleCount.
+         *
+         * @zh
+         * Billing计划付款将在 billingCycleCount 中设置的固定计费周期内重复发生。
+         */
+        FINITE_RECURRING = 2,
+        /**
+         * @en
+         * The billing plan payment is a one time charge that does not repeat.
+         *
+         * @zh
+         * Billing计划付款是一次性费用，不会重复。
+         */
+        NON_RECURRING = 3,
+    }
+
     export interface ProductDetailsParamsBuilder {
         setOfferToken: (purchaseToken: string) => ProductDetailsParamsBuilder;
         setProductDetails: (productDetails: ProductDetails) => ProductDetailsParamsBuilder;
@@ -1190,6 +1373,7 @@ declare namespace jsb {
     export class InAppMessageParams {
         private constructor();
         public static newBuilder(): InAppMessageParamsBuilder;
+        static InAppMessageCategoryId: typeof InAppMessageCategoryId;
     }
 
     export interface GetBillingConfigParamsBuilder {

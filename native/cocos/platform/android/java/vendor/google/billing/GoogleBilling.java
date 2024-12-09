@@ -28,10 +28,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.android.billingclient.api.BillingConfig;
+
 import com.android.billingclient.api.BillingResult;
-import com.android.billingclient.api.InAppMessageResult;
-import com.android.billingclient.api.PendingPurchasesParams;
 import com.android.billingclient.api.ProductDetails;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.AcknowledgePurchaseParams;
@@ -44,33 +42,26 @@ import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.AlternativeBillingOnlyReportingDetailsListener;
 import com.android.billingclient.api.ProductDetailsResponseListener;
 import com.android.billingclient.api.PurchasesResponseListener;
-import com.android.billingclient.api.PurchasesUpdatedListener;
-import com.android.billingclient.api.UserChoiceBillingListener;
 import com.android.billingclient.api.QueryProductDetailsParams;
 import com.android.billingclient.api.QueryPurchasesParams;
 import com.android.billingclient.api.GetBillingConfigParams;
 import com.android.billingclient.api.BillingConfigResponseListener;
-import com.android.billingclient.api.AlternativeBillingOnlyReportingDetails;
 import com.android.billingclient.api.AlternativeBillingOnlyAvailabilityListener;
 import com.android.billingclient.api.AlternativeBillingOnlyInformationDialogListener;
 import com.android.billingclient.api.ExternalOfferReportingDetailsListener;
-import com.android.billingclient.api.ExternalOfferReportingDetails;
 import com.android.billingclient.api.ExternalOfferAvailabilityListener;
 import com.android.billingclient.api.ExternalOfferInformationDialogListener;
 import com.android.billingclient.api.InAppMessageParams;
 import com.android.billingclient.api.InAppMessageResponseListener;
 import com.android.billingclient.api.BillingClientStateListener;
-import com.android.billingclient.api.UserChoiceDetails;
 import com.cocos.lib.GlobalObject;
-import com.cocos.lib.CocosHelper;
-import com.google.android.gms.common.internal.Asserts;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GoogleBilling implements PurchasesUpdatedListener, UserChoiceBillingListener {
+public class GoogleBilling {
 
     private static final String TAG = GoogleBilling.class.getSimpleName();
     private Map<Integer, ProductDetails> _productDetails = new HashMap<>();
@@ -265,27 +256,5 @@ public class GoogleBilling implements PurchasesUpdatedListener, UserChoiceBillin
     }
     public BillingResult showInAppMessages(InAppMessageParams params, @NonNull InAppMessageResponseListener listener) {
         return _billingClient.showInAppMessages(GlobalObject.getActivity(), params, listener);
-    }
-
-    @Override
-    public void onPurchasesUpdated(@NonNull BillingResult billingResult,
-                                   @Nullable List<Purchase> purchaseList) {
-        int startID = pushPurchases(purchaseList);
-        CocosHelper.runOnGameThread(new Runnable() {
-            @Override
-            public void run() {
-                GoogleBillingHelper.onPurchasesUpdated(_tag, billingResult, purchaseList, startID);
-            }
-        });
-    }
-
-    @Override
-    public void userSelectedAlternativeBilling(@NonNull UserChoiceDetails userChoiceDetails) {
-        CocosHelper.runOnGameThread(new Runnable() {
-            @Override
-            public void run() {
-                GoogleBillingHelper.userSelectedAlternativeBilling(_tag, userChoiceDetails);
-            }
-        });
     }
 }

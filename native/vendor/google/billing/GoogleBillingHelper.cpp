@@ -34,8 +34,12 @@
 #include "cocos/bindings/manual/jsb_conversions.h"
 #include "cocos/bindings/manual/jsb_global_init.h"
 #include "vendor/google/billing/GoogleBilling.h"
-#include "vendor/google/billing/GoogleBillingToNative.h"
+#include "vendor/google/billing/JniBilling.h"
 #include "vendor/google/billing/GoogleBillingManager.h"
+#include "vendor/google/billing/result-values/Purchase.h"
+#include "vendor/google/billing/build-params/AcknowledgePurchaseParams.h"
+#include "vendor/google/billing/result-values/ProductDetails.h"
+#include "vendor/google/billing/build-params/ConsumeParams.h"
 namespace {
 
 #ifndef JCLS_BILLING
@@ -87,10 +91,9 @@ template void callJSfunc(se::Object* obj, const char*, BillingResult*&&, Alterna
 template void callJSfunc(se::Object* obj, const char*, BillingResult*&&, ExternalOfferReportingDetails*&&);
 template void callJSfunc(se::Object* obj, const char*, InAppMessageResult*&&);
 
-int GoogleBillingHelper::createBillingClient(void* params) {
+int GoogleBillingHelper::createBillingClient(BillingClient::Builder* builder) {
     int tag = JniHelper::callStaticIntMethod(JCLS_BILLING, "newTag");
-    auto* builder = reinterpret_cast<BillingClient::Builder*>(params);
-    jobject buildObj = GoogleBillingToNative::newBillingClientBuilderObject(tag, builder);
+    jobject buildObj = JniBilling::newBillingClientBuilderObject(tag, builder);
 
     cc::JniMethodInfo t;
     cc::JniHelper::getStaticMethodInfo(t, JCLS_BILLING, "createBillingClient", "(ILcom/android/billingclient/api/BillingClient$Builder;)V");
@@ -157,11 +160,11 @@ void GoogleBillingHelper::isExternalOfferAvailableAsync(int tag, int callbackId)
 }
 
 BillingResult* GoogleBillingHelper::showAlternativeBillingOnlyInformationDialog(int tag, int callbackId) {
-    return cc::GoogleBillingToNative::callFunctionAndReturnBillingResult("showAlternativeBillingOnlyInformationDialog", tag, callbackId);
+    return cc::JniBilling::callFunctionAndReturnBillingResult("showAlternativeBillingOnlyInformationDialog", tag, callbackId);
 }
 
 BillingResult* GoogleBillingHelper::showExternalOfferInformationDialog(int tag, int callbackId) {
-    return cc::GoogleBillingToNative::callFunctionAndReturnBillingResult("showExternalOfferInformationDialog", tag, callbackId);
+    return cc::JniBilling::callFunctionAndReturnBillingResult("showExternalOfferInformationDialog", tag, callbackId);
 }
 
 BillingResult* GoogleBillingHelper::showInAppMessages(int tag, int callbackId, const std::vector<int>& inAppMessageCategoryId) {
@@ -177,62 +180,15 @@ BillingResult* GoogleBillingHelper::showInAppMessages(int tag, int callbackId, c
         env->SetIntArrayRegion(result, 0, size, buf);
         delete[] buf;
         jobject obj = t.env->CallStaticObjectMethod(t.classID, t.methodID, tag, callbackId, result);
-        return cc::GoogleBillingToNative::toBillingResult(env, obj);
+        return cc::JniBilling::toBillingResult(env, obj);
     }
     return nullptr;
 }
 
 void GoogleBillingHelper::launchBillingFlow(int tag, BillingFlowParams* params) {
-
-
-    JNIEnv *env = cc::JniHelper::getEnv();
-    cc::JniMethodInfo t;
-    cc::JniHelper::getStaticMethodInfo(t, "com/android/billingclient/api/BillingFlowParams", "newBuilder", "()Lcom/android/billingclient/api/BillingFlowParams$Builder;");
-    jobject builder = t.env->CallStaticObjectMethod(t.classID, t.methodID);
-    jclass builderClass = env->GetObjectClass(builder);
-
-    jmethodID setIsOfferPersonalizedMethodId = env->GetMethodID(builderClass, "setIsOfferPersonalized", "(Z)Lcom/android/billingclient/api/BillingFlowParams$Builder;");
-    env->CallObjectMethod(builder, setIsOfferPersonalizedMethodId, params->_isOfferPersonalized);
-
-    jmethodID setObfuscatedAccountIdMethodId = env->GetMethodID(builderClass, "setObfuscatedAccountId", "(Ljava/lang/String;)Lcom/android/billingclient/api/BillingFlowParams$Builder;");
-    env->CallObjectMethod(builder, setObfuscatedAccountIdMethodId, cc::StringUtils::newStringUTFJNI(env, params->_obfuscatedAccountid));
-
-    jmethodID setObfuscatedProfileIdMethodId = env->GetMethodID(builderClass, "setObfuscatedProfileId", "(Ljava/lang/String;)Lcom/android/billingclient/api/BillingFlowParams$Builder;");
-    env->CallObjectMethod(builder, setObfuscatedProfileIdMethodId, cc::StringUtils::newStringUTFJNI(env, params->_obfuscatedProfileId));
-
-    jobject listObjs = GoogleBillingToNative::newProductDetailsParamsListObject(params->_productDetailsParamsList);
-    jmethodID setProductDetailsParamsListMethodId = env->GetMethodID(builderClass, "setProductDetailsParamsList", "(Ljava/util/List;)Lcom/android/billingclient/api/BillingFlowParams$Builder;");
-    env->CallObjectMethod(builder, setProductDetailsParamsListMethodId, listObjs);
-
-    if(params->_subscriptionUpdateParams) {
-        jobject subscriptionOfferDetailsObj = GoogleBillingToNative::newSubscriptionUpdateParamsObject(params->_subscriptionUpdateParams);
-        jmethodID setSubscriptionUpdateParamsMethodId = env->GetMethodID(builderClass, "setSubscriptionUpdateParams", "(Lcom/android/billingclient/api/BillingFlowParams$SubscriptionUpdateParams;)Lcom/android/billingclient/api/BillingFlowParams$Builder;");
-        env->CallObjectMethod(builder, setSubscriptionUpdateParamsMethodId, subscriptionOfferDetailsObj);
-    }
-
-    jmethodID buildMethodId = env->GetMethodID(builderClass, "build", "()Lcom/android/billingclient/api/BillingFlowParams;");
-    jobject billingFlowParamsObj = env->CallObjectMethod(builder, buildMethodId);
-
     cc::JniMethodInfo t1;
     cc::JniHelper::getStaticMethodInfo(t1, JCLS_BILLING, "launchBillingFlow", "(ILcom/android/billingclient/api/BillingFlowParams;)V");
-    t1.env->CallStaticVoidMethod(t1.classID, t1.methodID, tag, billingFlowParamsObj);
-
-    // if (productDetailsList.empty()) {
-    //     return;
-    // }
-    // auto* env = JniHelper::getEnv();
-    // const int size = productDetailsList.size();
-    // jintArray result = env->NewIntArray(size);
-    // jint* buf = new jint[size];
-    // for (int i = 0; i < size; ++i) {
-    //     buf[i] = productDetailsList[i]->_id;
-    // }
-    // env->SetIntArrayRegion(result, 0, size, buf);
-    // delete[] buf;
-    // cc::JniMethodInfo t;
-    // cc::JniHelper::getStaticMethodInfo(t, JCLS_BILLING, "launchBillingFlow", "([ILjava/lang/String;)V");
-    // jstring offerToken = env->NewStringUTF(selectedOfferToken.c_str());
-    // t.env->CallStaticVoidMethod(t.classID, t.methodID, result, offerToken);
+    t1.env->CallStaticVoidMethod(t1.classID, t1.methodID, tag, JniBilling::newBillingFlowParamsObject(params));
 }
 
 void GoogleBillingHelper::consumeAsync(int tag, int callbackId, ConsumeParams* purchase) {
@@ -255,7 +211,7 @@ BillingResult* GoogleBillingHelper::isFeatureSupported(int tag, const std::strin
     if (cc::JniHelper::getStaticMethodInfo(t, JCLS_BILLING, "isFeatureSupported", "(Ljava/lang/String;)Lcom/android/billingclient/api/BillingResult;")) {
         jstring jFeature = cc::StringUtils::newStringUTFJNI(env, feature);
         jobject obj = t.env->CallStaticObjectMethod(t.classID, t.methodID, jFeature);
-        return cc::GoogleBillingToNative::toBillingResult(env, obj);
+        return cc::JniBilling::toBillingResult(env, obj);
     }
     return nullptr;
 }
@@ -264,7 +220,7 @@ void GoogleBillingHelper::onBillingSetupFinished(JNIEnv* env, jclass clazz, jint
     auto* billingClient = GoogleBillingManager::getInstance()->getBillingClient(tag);
     if (billingClient) {
         CC_ASSERT(callbackID >= 0 && callbackID < billingClient->_billingClientStateListeners.size());
-        cc::callJSfunc(billingClient->_billingClientStateListeners[callbackID], "onBillingSetupFinished", cc::GoogleBillingToNative::toBillingResult(env, billingResultObj));
+        cc::callJSfunc(billingClient->_billingClientStateListeners[callbackID], "onBillingSetupFinished", cc::JniBilling::toBillingResult(env, billingResultObj));
     }
 }
 
@@ -282,8 +238,8 @@ void GoogleBillingHelper::onProductDetailsResponse(JNIEnv* env, jclass clazz,
                                                 jobject billingResultObj,
                                                 jobject productDetailsListObj,
                                                 jint startID) {
-    auto* billingResult = cc::GoogleBillingToNative::toBillingResult(env, billingResultObj);
-    std::vector<cc::ProductDetails*> productDetailsList = cc::GoogleBillingToNative::toProductDetailList(env, productDetailsListObj, startID);
+    auto* billingResult = cc::JniBilling::toBillingResult(env, billingResultObj);
+    std::vector<cc::ProductDetails*> productDetailsList = cc::JniBilling::toProductDetailList(env, productDetailsListObj, startID);
     auto* billingClient = GoogleBillingManager::getInstance()->getBillingClient(tag);
     if (billingClient) {
         CC_ASSERT(callbackID >= 0 && callbackID < billingClient->_productDetailsResponseListeners.size());
@@ -298,21 +254,21 @@ void GoogleBillingHelper::onPurchasesUpdated(JNIEnv* env, jclass clazz,
                                           jint startID) {
 
     auto* billingClient = GoogleBillingManager::getInstance()->getBillingClient(tag);
-    if (billingClient && billingClient->purchasesUpdatedListener) {
-        auto* billingResult = cc::GoogleBillingToNative::toBillingResult(env, billingResultObj);
+    if (billingClient && billingClient->_purchasesUpdatedListener) {
+        auto* billingResult = cc::JniBilling::toBillingResult(env, billingResultObj);
         std::vector<cc::Purchase*> purchasesList;
         if (purchasesListObj != nullptr) {
-            purchasesList = cc::GoogleBillingToNative::toPurchaseList(env, purchasesListObj, startID);
+            purchasesList = cc::JniBilling::toPurchaseList(env, purchasesListObj, startID);
         }
-        cc::callJSfunc(billingClient->purchasesUpdatedListener, "onPurchasesUpdated", billingResult, purchasesList);
+        cc::callJSfunc(billingClient->_purchasesUpdatedListener, "onPurchasesUpdated", billingResult, purchasesList);
     }
 }
 
  void GoogleBillingHelper::userSelectedAlternativeBilling(JNIEnv *env, jclass clazz, jint tag, jobject userChoiceDetailsObj) {
     auto* billingClient = GoogleBillingManager::getInstance()->getBillingClient(tag);
-    if (billingClient && billingClient->userChoiceBillingListener) {
-        auto* userChoiceDetails = cc::GoogleBillingToNative::toUserChoiceDetails(env, userChoiceDetailsObj);
-        cc::callJSfunc(billingClient->userChoiceBillingListener, "userSelectedAlternativeBilling", userChoiceDetails);
+    if (billingClient && billingClient->_userChoiceBillingListener) {
+        auto* userChoiceDetails = cc::JniBilling::toUserChoiceDetails(env, userChoiceDetailsObj);
+        cc::callJSfunc(billingClient->_userChoiceBillingListener, "userSelectedAlternativeBilling", userChoiceDetails);
     }
  }
 
@@ -320,7 +276,7 @@ void GoogleBillingHelper::onConsumeResponse(JNIEnv* env, jclass clazz, jint tag,
     auto* billingClient = GoogleBillingManager::getInstance()->getBillingClient(tag);
     if (billingClient) {
         CC_ASSERT(callbackId >= 0 && callbackId < billingClient->_consumeResponseListeners.size());
-        auto *billingResult = cc::GoogleBillingToNative::toBillingResult(env, billingResultObj);
+        auto *billingResult = cc::JniBilling::toBillingResult(env, billingResultObj);
         cc::callJSfunc(billingClient->_consumeResponseListeners[callbackId],
                        "onConsumeResponse", billingResult,
                        cc::StringUtils::getStringUTFCharsJNI(env,static_cast<jstring>(purchaseToken)));
@@ -332,7 +288,7 @@ void GoogleBillingHelper::onAcknowledgePurchaseResponse(JNIEnv* env, jclass claz
     if (billingClient) {
         CC_ASSERT(callbackId >= 0 &&
                   callbackId < billingClient->_acknowledgePurchaseResponseListeners.size());
-        auto *billingResult = cc::GoogleBillingToNative::toBillingResult(env, billingResultObj);
+        auto *billingResult = cc::JniBilling::toBillingResult(env, billingResultObj);
         cc::callJSfunc(billingClient->_acknowledgePurchaseResponseListeners[callbackId], "onAcknowledgePurchaseResponse", billingResult);
     }
 }
@@ -342,8 +298,8 @@ void GoogleBillingHelper::onQueryPurchasesResponse(JNIEnv* env, jclass clazz, ji
     if (billingClient) {
         CC_ASSERT(callbackId >= 0 &&
                   callbackId < billingClient->_queryPurchasesResponseListeners.size());
-        auto* billingResult = cc::GoogleBillingToNative::toBillingResult(env, billingResultObj);
-        std::vector<cc::Purchase*> purchasesList = cc::GoogleBillingToNative::toPurchaseList(env, purchasesListObj, startID);
+        auto* billingResult = cc::JniBilling::toBillingResult(env, billingResultObj);
+        std::vector<cc::Purchase*> purchasesList = cc::JniBilling::toPurchaseList(env, purchasesListObj, startID);
         cc::callJSfunc(billingClient->_queryPurchasesResponseListeners[callbackId], "onQueryPurchasesResponse", billingResult, purchasesList);
     }
 }
@@ -353,10 +309,10 @@ void GoogleBillingHelper::onBillingConfigResponse(JNIEnv* env, jclass clazz, jin
     if (billingClient) {
         CC_ASSERT(callbackId >= 0 &&
                   callbackId < billingClient->_billingConfigListeners.size());
-        auto* billingResult = cc::GoogleBillingToNative::toBillingResult(env, billingResultObj);
+        auto* billingResult = cc::JniBilling::toBillingResult(env, billingResultObj);
         cc::BillingConfig* billingConfig = nullptr;
         if (billingConfigObj) {
-            billingConfig = cc::GoogleBillingToNative::toBillingConfig(env, billingConfigObj);
+            billingConfig = cc::JniBilling::toBillingConfig(env, billingConfigObj);
         }
         cc::callJSfunc(billingClient->_billingConfigListeners[callbackId], "onBillingConfigResponse", billingResult, billingConfig);
     }
@@ -367,10 +323,10 @@ void GoogleBillingHelper::onAlternativeBillingOnlyTokenResponse(JNIEnv* env, jcl
     if (billingClient) {
         CC_ASSERT(callbackId >= 0 &&
                   callbackId < billingClient->_alternativeBillingOnlyReportingDetailsListeners.size());
-        auto* billingResult = cc::GoogleBillingToNative::toBillingResult(env, billingResultObj);
+        auto* billingResult = cc::JniBilling::toBillingResult(env, billingResultObj);
         cc::AlternativeBillingOnlyReportingDetails* toAlternativeBillingOnlyReporting = nullptr;
         if (alternativeBillingOnlyReportingDetailsObj) {
-            toAlternativeBillingOnlyReporting = cc::GoogleBillingToNative::toAlternativeBillingOnlyReportingDetails(env, alternativeBillingOnlyReportingDetailsObj);
+            toAlternativeBillingOnlyReporting = cc::JniBilling::toAlternativeBillingOnlyReportingDetails(env, alternativeBillingOnlyReportingDetailsObj);
         }
         cc::callJSfunc(billingClient->_alternativeBillingOnlyReportingDetailsListeners[callbackId], "onAlternativeBillingOnlyTokenResponse", billingResult, toAlternativeBillingOnlyReporting);
     }
@@ -381,10 +337,10 @@ void GoogleBillingHelper::onExternalOfferReportingDetailsResponse(JNIEnv* env, j
     if (billingClient) {
         CC_ASSERT(callbackId >= 0 &&
                   callbackId < billingClient->_externalOfferReportingDetailsListeners.size());
-        auto* billingResult = cc::GoogleBillingToNative::toBillingResult(env, billingResultObj);
+        auto* billingResult = cc::JniBilling::toBillingResult(env, billingResultObj);
         cc::ExternalOfferReportingDetails* externalOfferReportingDetails = nullptr;
         if (externalOfferReportingDetailsObj) {
-            externalOfferReportingDetails = cc::GoogleBillingToNative::toExternalOfferReportingDetails(env, externalOfferReportingDetailsObj);
+            externalOfferReportingDetails = cc::JniBilling::toExternalOfferReportingDetails(env, externalOfferReportingDetailsObj);
         }
         cc::callJSfunc(billingClient->_externalOfferReportingDetailsListeners[callbackId], "onExternalOfferReportingDetailsResponse", billingResult, externalOfferReportingDetails);
     }
@@ -395,7 +351,7 @@ void GoogleBillingHelper::onAlternativeBillingOnlyAvailabilityResponse(JNIEnv* e
     if (billingClient) {
         CC_ASSERT(callbackId >= 0 &&
                   callbackId < billingClient->_alternativeBillingOnlyAvailabilityListeners.size());
-        auto* billingResult = cc::GoogleBillingToNative::toBillingResult(env, billingResultObj);
+        auto* billingResult = cc::JniBilling::toBillingResult(env, billingResultObj);
         cc::callJSfunc(billingClient->_alternativeBillingOnlyAvailabilityListeners[callbackId], "onAlternativeBillingOnlyAvailabilityResponse", billingResult);
     }
 }
@@ -405,7 +361,7 @@ void GoogleBillingHelper::onExternalOfferAvailabilityResponse(JNIEnv* env, jclas
     if (billingClient) {
         CC_ASSERT(callbackId >= 0 &&
                   callbackId < billingClient->_externalOfferAvailabilityListeners.size());
-        auto* billingResult = cc::GoogleBillingToNative::toBillingResult(env, billingResultObj);
+        auto* billingResult = cc::JniBilling::toBillingResult(env, billingResultObj);
         cc::callJSfunc(billingClient->_externalOfferAvailabilityListeners[callbackId], "onExternalOfferAvailabilityResponse", billingResult);
     }
 }
@@ -415,7 +371,7 @@ void GoogleBillingHelper::onAlternativeBillingOnlyInformationDialogResponse(JNIE
     if (billingClient) {
         CC_ASSERT(callbackId >= 0 &&
                   callbackId < billingClient->_alternativeBillingOnlyInformationDialogListeners.size());
-        auto* billingResult = cc::GoogleBillingToNative::toBillingResult(env, billingResultObj);
+        auto* billingResult = cc::JniBilling::toBillingResult(env, billingResultObj);
         cc::callJSfunc(billingClient->_alternativeBillingOnlyInformationDialogListeners[callbackId], "onAlternativeBillingOnlyInformationDialogResponse", billingResult);
     }
 }
@@ -425,7 +381,7 @@ void GoogleBillingHelper::onExternalOfferInformationDialogResponse(JNIEnv* env, 
     if (billingClient) {
         CC_ASSERT(callbackId >= 0 &&
                   callbackId < billingClient->_externalOfferInformationDialogListeners.size());
-        auto* billingResult = cc::GoogleBillingToNative::toBillingResult(env, billingResultObj);
+        auto* billingResult = cc::JniBilling::toBillingResult(env, billingResultObj);
         cc::callJSfunc(billingClient->_externalOfferInformationDialogListeners[callbackId], "onExternalOfferInformationDialogResponse", billingResult);
     }
 }
@@ -435,7 +391,7 @@ void GoogleBillingHelper::onInAppMessageResponse(JNIEnv* env, jclass clazz, jint
     if (billingClient) {
         CC_ASSERT(callbackId >= 0 &&
                   callbackId < billingClient->_inappListeners.size());
-        auto* inAppMessageResult = cc::GoogleBillingToNative::toInAppMessageResult(env, inAppMessageResultObj);
+        auto* inAppMessageResult = cc::JniBilling::toInAppMessageResult(env, inAppMessageResultObj);
         cc::callJSfunc(billingClient->_inappListeners[callbackId], "onInAppMessageResponse", inAppMessageResult);
     }
 }

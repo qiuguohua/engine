@@ -30,9 +30,20 @@
 
 #include "base/Macros.h"
 #include "vendor/google/billing/GoogleBilling.h"
+#include "vendor/google/billing/result-values/AccountIdentifiers.h"
+#include "vendor/google/billing/result-values/AlternativeBillingOnlyReportingDetails.h"
+#include "vendor/google/billing/result-values/BillingConfig.h"
+#include "vendor/google/billing/result-values/BillingResult.h"
+#include "vendor/google/billing/result-values/ExternalOfferReportingDetails.h"
+#include "vendor/google/billing/result-values/InAppMessageResult.h"
+#include "vendor/google/billing/result-values/Purchase.h"
+#include "vendor/google/billing/result-values/ProductDetails.h"
+#include "vendor/google/billing/result-values/UserChoiceDetails.h"
+#include "vendor/google/billing/build-params/BillingFlowParams.h"
+
 namespace cc {
 
-class CC_DLL GoogleBillingToNative {
+class CC_DLL JniBilling {
 public:
     static BillingResult *toBillingResult(JNIEnv *env, jobject obj);
     static std::vector<ProductDetails *> toProductDetailList(JNIEnv *env, jobject productsObj, jint startID);
@@ -51,17 +62,21 @@ public:
     static ProductDetails::PricingPhase *toPricingPhase(JNIEnv *env, jobject obj);
     static ProductDetails::PricingPhases *toPricingPhases(JNIEnv* env, jobject obj);
     static BillingResult *callFunctionAndReturnBillingResult(const std::string &functionName, int tag, int callbackId);
+
+    static UserChoiceDetails::Product* toUserChoiceDetailsProduct(JNIEnv* env, jobject obj);
+    static UserChoiceDetails* toUserChoiceDetails(JNIEnv* env, jobject obj);
+
+
+    static jobject newBillingFlowParamsObject(BillingFlowParams* params);
+    static jobject newBillingClientBuilderObject(int tag, BillingClient::Builder* params);
+private:
     static jobject newSubscriptionUpdateParamsObject(BillingFlowParams::SubscriptionUpdateParams* params);
     static jobject newProductDetailsParamsObject(BillingFlowParams::ProductDetailsParams* params);
     static jobject newProductDetailsParamsListObject(std::vector<BillingFlowParams::ProductDetailsParams*> listParams);
-    static UserChoiceDetails::Product* toUserChoiceDetailsProduct(JNIEnv* env, jobject obj);
-    static UserChoiceDetails* toUserChoiceDetails(JNIEnv* env, jobject obj);
-    
+
     static jobject newPurchaseUpdateListenerObject(int tag);
     static jobject newUserChoiceBillingListenerObj(int tag);
     static jobject newPendingPurchasesParamsObject(PendingPurchasesParams* params);
-    static jobject newBillingClientBuilderObject(int tag, BillingClient::Builder* params);
-private:
     static jobject newCustomListenerObject(int tag, const std::string& functionName);
 };
 

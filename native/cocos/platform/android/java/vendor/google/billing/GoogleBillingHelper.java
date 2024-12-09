@@ -24,8 +24,6 @@ THE SOFTWARE.
 
 package google.billing;
 
-import android.annotation.SuppressLint;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -39,7 +37,6 @@ import com.android.billingclient.api.BillingConfig;
 import com.android.billingclient.api.BillingConfigResponseListener;
 import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.BillingResult;
-import com.android.billingclient.api.ConsumeParams;
 import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.ExternalOfferAvailabilityListener;
 import com.android.billingclient.api.ExternalOfferInformationDialogListener;
@@ -58,9 +55,7 @@ import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.UserChoiceBillingListener;
 import com.android.billingclient.api.UserChoiceDetails;
 import com.cocos.lib.CocosHelper;
-import com.cocos.lib.CocosVideoView;
 import com.cocos.lib.GlobalObject;
-import google.billing.GoogleBilling;
 import android.util.SparseArray;
 import com.android.billingclient.api.BillingClientStateListener;
 

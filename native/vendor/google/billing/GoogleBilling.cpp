@@ -25,16 +25,41 @@
 #include "vendor/google/billing/GoogleBilling.h"
 #include "platform/java/jni/JniHelper.h"
 #include "platform/java/jni/JniImp.h"
+#include "cocos/bindings/jswrapper/SeApi.h"
 #include "vendor/google/billing/GoogleBillingHelper.h"
 #include "vendor/google/billing/GoogleBillingManager.h"
+#include "vendor/google/billing/build-params/AcknowledgePurchaseParams.h"
+#include "vendor/google/billing/build-params/BillingFlowParams.h"
+#include "vendor/google/billing/build-params/ConsumeParams.h"
+#include "vendor/google/billing/build-params/GetBillingConfigParams.h"
+#include "vendor/google/billing/build-params/InAppMessageParams.h"
+#include "vendor/google/billing/build-params/PendingPurchasesParams.h"
+#include "vendor/google/billing/build-params/QueryProductDetailsParams.h"
+#include "vendor/google/billing/build-params/QueryPurchasesParams.h"
+
 namespace cc {
+
+BillingClient::Builder& BillingClient::Builder::enableUserChoiceBilling(se::Object* listener) {
+    listener->root();
+    listener->incRef();
+    _userChoiceBillingListener = listener;
+    return *this;
+}
+
+BillingClient::Builder& BillingClient::Builder::setListener(se::Object* listener) {
+    listener->root();
+    listener->incRef();
+    _purchasesUpdatedListener = listener;
+    return *this;
+}
+
 
 BillingClient::BillingClient(Builder* builder) {
     this->_enableAlternativeBillingOnly = builder->_enableAlternativeBillingOnly;
     this->_enableExternalOffer = builder->_enableExternalOffer;
     this->_pendingPurchasesParams = builder->_pendingPurchasesParams;
-    this->purchasesUpdatedListener = builder->purchasesUpdatedListener;
-    this->userChoiceBillingListener = builder->userChoiceBillingListener;
+    this->_purchasesUpdatedListener = builder->_purchasesUpdatedListener;
+    this->_userChoiceBillingListener = builder->_userChoiceBillingListener;
 
     _tag = GoogleBillingHelper::createBillingClient(builder);
 
@@ -47,22 +72,6 @@ BillingClient::~BillingClient() {
     CC_ASSERT(_tag >= 0);
     GoogleBillingHelper::removeBillingClient(_tag);
     GoogleBillingManager::getInstance()->removeBillingClient(_tag);
-}
-
-ProductDetails::~ProductDetails() {
-    if (_oneTimePurchaseOfferDetails) {
-        delete _oneTimePurchaseOfferDetails;
-        _oneTimePurchaseOfferDetails = nullptr;
-    }
-    for (auto* ptr : _subscriptionOfferDetails) {
-        delete ptr;
-    }
-    _subscriptionOfferDetails.clear();
-    GoogleBillingHelper::removeProductDetails(_tag, _id);
-}
-
-Purchase::~Purchase() {
-    GoogleBillingHelper::removePurchase(_tag, _id);
 }
 
 void BillingClient::startConnection(se::Object* listener) {

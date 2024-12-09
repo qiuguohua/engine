@@ -29,7 +29,7 @@
 #include <map>
 
 #include "base/Macros.h"
-
+#include "vendor/google/billing/GoogleBilling.h"
 namespace cc {
 class BillingResult;
 class ProductDetails;
@@ -51,7 +51,7 @@ class AcknowledgePurchaseParams;
 
 class CC_DLL GoogleBillingHelper {
 public:
-    static int createBillingClient(void* builder);
+    static int createBillingClient(BillingClient::Builder* builder);
     static void removeBillingClient(int tag);
     static void removeProductDetails(int tag, int productDetailsID);
     static void removePurchase(int tag, int purchaseID);

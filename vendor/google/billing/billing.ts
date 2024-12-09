@@ -54,10 +54,10 @@ export declare namespace google {
         export type InstallmentPlanDetails = jsb.InstallmentPlanDetails;
         export type PricingPhase = jsb.PricingPhase;
         export type SubscriptionOfferDetails = jsb.SubscriptionOfferDetails;
-        export type ProductDetails = jsb.ProductDetails;
+
         export type AccountIdentifiers = jsb.AccountIdentifiers;
         export type PendingPurchaseUpdate = jsb.PendingPurchaseUpdate;
-        export type Purchase = jsb.Purchase;
+
         export type BillingConfig = jsb.BillingConfig;
         export type AlternativeBillingOnlyReportingDetails = jsb.AlternativeBillingOnlyReportingDetails;
         export type ExternalOfferReportingDetails = jsb.ExternalOfferReportingDetails;
@@ -65,8 +65,16 @@ export declare namespace google {
 
         export type BillingResult = jsb.BillingResult;
         export type PendingPurchasesParams = jsb.PendingPurchasesParams;
-        export type QueryProductDetailsParams = jsb.QueryProductDetailsParams;
-        export type Product = jsb.Product;
+
+        export namespace ProductDetails {
+            export type RecurrenceMode = jsb.RecurrenceMode;
+        }
+        export type ProductDetails = jsb.ProductDetails;
+
+        export namespace Purchase {
+            export type PurchaseState = jsb.PurchaseState;
+        }
+        export type Purchase = jsb.Purchase;
 
         export type BillingClient = jsb.BillingClient;
         export namespace BillingFlowParams {
@@ -74,8 +82,13 @@ export declare namespace google {
             export type SubscriptionUpdateParams = jsb.SubscriptionUpdateParams;
             export type ProductDetailsParams = jsb.ProductDetailsParams;
         }
-
         export type BillingFlowParams = jsb.BillingFlowParams;
+
+        export namespace QueryProductDetailsParams {
+            export type Product = jsb.Product;
+        }
+        export type QueryProductDetailsParams = jsb.QueryProductDetailsParams;
+
         export type ConsumeParams = jsb.ConsumeParams;
         export type AcknowledgePurchaseParams = jsb.AcknowledgePurchaseParams;
         export type QueryPurchasesParams = jsb.QueryPurchasesParams;

@@ -21,3 +21,26 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 ****************************************************************************/
+
+#pragma once
+
+#include <vector>
+
+#include "base/Macros.h"
+#include "base/RefCounted.h"
+
+namespace cc {
+
+class ExternalOfferReportingDetails : public cc::RefCounted {
+public:
+    std::string getExternalTransactionToken() const {
+        return this->_externalTransactionToken;
+    }
+
+private:
+    friend class JniBilling;
+    std::string _externalTransactionToken;
+};
+
+
+} // namespace cc

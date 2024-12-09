@@ -63,4 +63,36 @@ jsb.BillingClient.ProductType = {
     INAPP: 'inapp',
     SUBS: 'subs',
 };
+
+jsb.InAppMessageParams.InAppMessageCategoryId = {
+    UNKNOWN_IN_APP_MESSAGE_CATEGORY_ID: 0,
+    TRANSACTIONAL: 2,
+};
+
+jsb.InAppMessageResult.InAppMessageResponseCode = {
+    NO_ACTION_NEEDED: 0,
+    SUBSCRIPTION_STATUS_UPDATED: 1,
+};
+
+jsb.BillingFlowParams.SubscriptionUpdateParams.ReplacementMode = {
+    UNKNOWN_REPLACEMENT_MODE: 0,
+    WITH_TIME_PRORATION: 1,
+    CHARGE_PRORATED_PRICE: 2,
+    WITHOUT_PRORATION: 3,
+    CHARGE_FULL_PRICE: 5,
+    DEFERRED: 6,
+};
+
+jsb.ProductDetails.RecurrenceMode = {
+    INFINITE_RECURRING: 1,
+    FINITE_RECURRING: 2,
+    NON_RECURRING: 3,
+};
+
+jsb.Purchase.PurchaseState = {
+    PENDING: 2,
+    PURCHASED: 1,
+    UNSPECIFIED_STATE: 0,
+};
+
 export {};

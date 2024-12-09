@@ -128,7 +128,6 @@
 #if CC_USE_GOOGLE_BILLING
     #include "cocos/bindings/auto/jsb_google_billing_auto.h"
 #endif
-//extern bool jsb_register_all_billing(se::Object *); // NOLINT
 
 bool jsb_register_all_modules() {
     se::ScriptEngine *se = se::ScriptEngine::getInstance();
@@ -166,8 +165,6 @@ bool jsb_register_all_modules() {
     se->addRegisterCallback(register_all_render);
     se->addRegisterCallback(register_all_native2d);
 
-
-
 #if (CC_PLATFORM == CC_PLATFORM_IOS || CC_PLATFORM == CC_PLATFORM_MACOS)
     se->addRegisterCallback(register_javascript_objc_bridge);
     se->addRegisterCallback(register_script_native_bridge);
@@ -198,7 +195,6 @@ bool jsb_register_all_modules() {
 #endif
 
 #if CC_USE_GOOGLE_BILLING
-    //se->addRegisterCallback(jsb_register_all_billing);
     se->addRegisterCallback(register_all_billing);
 #endif
 

@@ -765,11 +765,31 @@ if(USE_GOOGLE_BILLING)
         vendor/google/billing/GoogleBilling.cpp
         vendor/google/billing/GoogleBilling.h
         vendor/google/billing/GoogleBillingManager.h
-        vendor/google/billing/GoogleBillingManager.cpp
         vendor/google/billing/GoogleBillingHelper.cpp
         vendor/google/billing/GoogleBillingHelper.h
-        vendor/google/billing/GoogleBillingToNative.cpp
-        vendor/google/billing/GoogleBillingToNative.h
+        vendor/google/billing/JniBilling.cpp
+        vendor/google/billing/JniBilling.h
+
+        vendor/google/billing/build-params/AcknowledgePurchaseParams.h
+        vendor/google/billing/build-params/BillingFlowParams.h
+        vendor/google/billing/build-params/ConsumeParams.h
+        vendor/google/billing/build-params/GetBillingConfigParams.h
+        vendor/google/billing/build-params/InAppMessageParams.h
+        vendor/google/billing/build-params/PendingPurchasesParams.h
+        vendor/google/billing/build-params/QueryProductDetailsParams.h
+        vendor/google/billing/build-params/QueryPurchasesParams.h
+        
+        vendor/google/billing/result-values/AccountIdentifiers.h
+        vendor/google/billing/result-values/AlternativeBillingOnlyReportingDetails.h
+        vendor/google/billing/result-values/BillingConfig.h
+        vendor/google/billing/result-values/BillingResult.h
+        vendor/google/billing/result-values/ExternalOfferReportingDetails.h
+        vendor/google/billing/result-values/InAppMessageResult.h
+        vendor/google/billing/result-values/Purchase.h
+        vendor/google/billing/result-values/Purchase.cpp
+        vendor/google/billing/result-values/ProductDetails.h
+        vendor/google/billing/result-values/ProductDetails.cpp
+        vendor/google/billing/result-values/UserChoiceDetails.h
     )
 endif()
 
@@ -2620,13 +2640,6 @@ if(USE_ADPF)
     cocos_source_files(
         cocos/bindings/manual/jsb_adpf.cpp
     )
-endif()
-
-if(USE_GOOGLE_BILLING)
-    cocos_source_files(
-        cocos/bindings/manual/jsb_google_billing.cpp
-    )
-   
 endif()
 
 if(ANDROID)
