@@ -1320,6 +1320,7 @@ declare namespace jsb {
     export class SubscriptionUpdateParams {
         private constructor();
         static newBuilder(): () => SubscriptionUpdateParamsBuilder;
+        static ReplacementMode: typeof jsb.ReplacementMode;
     }
 
     export class BillingFlowParams {
