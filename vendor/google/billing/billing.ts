@@ -30,25 +30,24 @@ declare const jsb: any;
 
 export namespace google {
     export namespace billing {
-        export const BillingClient = JSB ? jsb.BillingClient : null;
-        export const BillingResult = JSB ? jsb.BillingResult : null;
+        export const BillingClient = JSB ? jsb.BillingClient : null as unknown as typeof jsb.BillingClient;
+        export const BillingResult = JSB ? jsb.BillingResult : null as unknown as typeof jsb.BillingResult;
 
-        export const PendingPurchasesParams = JSB ? jsb.PendingPurchasesParams : null;
+        export const PendingPurchasesParams = JSB ? jsb.PendingPurchasesParams : null as unknown as typeof jsb.PendingPurchasesParams;
 
         // export const ProductDetailsParams = jsb.ProductDetailsParams;
-        export const QueryProductDetailsParams = JSB ? jsb.QueryProductDetailsParams : null;
+        export const QueryProductDetailsParams = JSB ? jsb.QueryProductDetailsParams : null as unknown as typeof jsb.QueryProductDetailsParams;
 
-        export const Product = JSB ? jsb.Product : null;
-        export const BillingFlowParams = JSB ? jsb.BillingFlowParams : null;
+        export const Product = JSB ? jsb.Product : null as unknown as typeof jsb.Product;
+        export const BillingFlowParams = JSB ? jsb.BillingFlowParams : null as unknown as typeof jsb.BillingFlowParams;
 
-        export const ConsumeParams = JSB ? jsb.ConsumeParams : null;
-        export const AcknowledgePurchaseParams = JSB ? jsb.AcknowledgePurchaseParams : null;
-        export const QueryPurchasesParams = JSB ? jsb.QueryPurchasesParams : null;
-        export const InAppMessageParams = JSB ? jsb.InAppMessageParams : null;
-        export const GetBillingConfigParams = JSB ? jsb.GetBillingConfigParams : null;
+        export const ConsumeParams = JSB ? jsb.ConsumeParams : null as unknown as typeof jsb.ConsumeParams;
+        export const AcknowledgePurchaseParams = JSB ? jsb.AcknowledgePurchaseParams : null as unknown as typeof jsb.AcknowledgePurchaseParams;
+        export const QueryPurchasesParams = JSB ? jsb.QueryPurchasesParams : null as unknown as typeof jsb.QueryPurchasesParams;
+        export const InAppMessageParams = JSB ? jsb.InAppMessageParams : null as unknown as typeof jsb.InAppMessageParams;
+        export const GetBillingConfigParams = JSB ? jsb.GetBillingConfigParams : null as unknown as typeof jsb.GetBillingConfigParams;
     }
 }
-
 export declare namespace google {
     export namespace billing {
         export type UserChoiceDetails = jsb.UserChoiceDetails;

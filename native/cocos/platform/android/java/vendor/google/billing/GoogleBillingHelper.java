@@ -59,7 +59,7 @@ import com.cocos.lib.GlobalObject;
 import android.util.SparseArray;
 import com.android.billingclient.api.BillingClientStateListener;
 
-public class GoogleBillingHelper {
+public final class GoogleBillingHelper {
 
     private static SparseArray<GoogleBilling> googleBillings = new SparseArray<GoogleBilling>();
     private static int billingTag = 0;
@@ -77,7 +77,7 @@ public class GoogleBillingHelper {
         });
     }
 
-    public static int removeBillingClient(int tag) {
+    public static int removeGoogleBilling(int tag) {
         final int index = billingTag;
         GlobalObject.runOnUiThread(new Runnable() {
             @Override
@@ -129,30 +129,30 @@ public class GoogleBillingHelper {
         }
     }
 
-    public static native void onBillingSetupFinished(int tag, int callbackId, @NonNull BillingResult billingResult);
-    public static native void onBillingServiceDisconnected(int tag, int callbackId);
-    public static native void onProductDetailsResponse(int tag, int callbackId, @NonNull BillingResult billingResult, @NonNull List<ProductDetails> productDetailsList, int startID);
-    public static native void onPurchasesUpdated(int tag, @NonNull BillingResult billingResult, @Nullable List<Purchase> purchasesList, int startID);
-    public static native void userSelectedAlternativeBilling(int tag, @NonNull UserChoiceDetails userChoiceDetails);
-    public static native void onQueryPurchasesResponse(int tag, int callbackId, @NonNull BillingResult billingResult, @NonNull List<Purchase> purchasesList, int startID);
-    public static native void onConsumeResponse(int tag, int callbackId, @NonNull BillingResult billingResult, @NonNull String purchaseToken);
-    public static native void onAcknowledgePurchaseResponse(int tag, int callbackId, @NonNull BillingResult billingResult);
-    public static native void onBillingConfigResponse(int tag, int callbackId, @NonNull BillingResult billingResult, @Nullable BillingConfig billingConfig);
+    private static native void onBillingSetupFinished(int tag, int callbackId, @NonNull BillingResult billingResult);
+    private static native void onBillingServiceDisconnected(int tag, int callbackId);
+    private static native void onProductDetailsResponse(int tag, int callbackId, @NonNull BillingResult billingResult, @NonNull List<ProductDetails> productDetailsList, int startID);
+    private static native void onPurchasesUpdated(int tag, @NonNull BillingResult billingResult, @Nullable List<Purchase> purchasesList, int startID);
+    private static native void userSelectedAlternativeBilling(int tag, @NonNull UserChoiceDetails userChoiceDetails);
+    private static native void onQueryPurchasesResponse(int tag, int callbackId, @NonNull BillingResult billingResult, @NonNull List<Purchase> purchasesList, int startID);
+    private static native void onConsumeResponse(int tag, int callbackId, @NonNull BillingResult billingResult, @NonNull String purchaseToken);
+    private static native void onAcknowledgePurchaseResponse(int tag, int callbackId, @NonNull BillingResult billingResult);
+    private static native void onBillingConfigResponse(int tag, int callbackId, @NonNull BillingResult billingResult, @Nullable BillingConfig billingConfig);
 
-    public static native void onAlternativeBillingOnlyTokenResponse(int tag, int callbackId, @NonNull BillingResult billingResult,
+    private static native void onAlternativeBillingOnlyTokenResponse(int tag, int callbackId, @NonNull BillingResult billingResult,
                                                                     @Nullable AlternativeBillingOnlyReportingDetails alternativeBillingOnlyReportingDetails);
-    public static native void onAlternativeBillingOnlyAvailabilityResponse(int tag, int callbackId, @NonNull BillingResult billingResult);
+    private static native void onAlternativeBillingOnlyAvailabilityResponse(int tag, int callbackId, @NonNull BillingResult billingResult);
 
-    public static native void onExternalOfferReportingDetailsResponse(
+    private static native void onExternalOfferReportingDetailsResponse(
         int tag,
         int callbackId,
         @NonNull BillingResult billingResult,
         @Nullable ExternalOfferReportingDetails externalOfferReportingDetails
     );
-    public static native void onExternalOfferAvailabilityResponse(int tag, int callbackId, @NonNull BillingResult billingResult);
-    public static native void onExternalOfferInformationDialogResponse(int tag, int callbackId, @NonNull BillingResult billingResult);
-    public static native void onAlternativeBillingOnlyInformationDialogResponse(int tag, int callbackId, @NonNull BillingResult billingResult);
-    public static native void onInAppMessageResponse(int tag, int callbackId, @NonNull InAppMessageResult inAppMessageResult);
+    private static native void onExternalOfferAvailabilityResponse(int tag, int callbackId, @NonNull BillingResult billingResult);
+    private static native void onExternalOfferInformationDialogResponse(int tag, int callbackId, @NonNull BillingResult billingResult);
+    private static native void onAlternativeBillingOnlyInformationDialogResponse(int tag, int callbackId, @NonNull BillingResult billingResult);
+    private static native void onInAppMessageResponse(int tag, int callbackId, @NonNull InAppMessageResult inAppMessageResult);
 
     public static ProductDetails getProductDetailsObject(int tag, int productDetailsID) {
         GoogleBilling billing = googleBillings.get(tag);

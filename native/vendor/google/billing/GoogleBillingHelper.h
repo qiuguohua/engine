@@ -52,7 +52,7 @@ class AcknowledgePurchaseParams;
 class CC_DLL GoogleBillingHelper {
 public:
     static int createGoogleBilling(BillingClient::Builder* builder);
-    static void removeBillingClient(int tag);
+    static void removeGoogleBilling(int tag);
     static void removeProductDetails(int tag, int productDetailsID);
     static void removePurchase(int tag, int purchaseID);
     static void startConnection(int tag, int callbackID);

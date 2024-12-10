@@ -102,8 +102,8 @@ int GoogleBillingHelper::createGoogleBilling(BillingClient::Builder* builder) {
     return tag;
 }
 
-void GoogleBillingHelper::removeBillingClient(int tag) {
-   JniHelper::callStaticIntMethod(JCLS_BILLING, "removeBillingClient", tag);
+void GoogleBillingHelper::removeGoogleBilling(int tag) {
+   JniHelper::callStaticIntMethod(JCLS_BILLING, "removeGoogleBilling", tag);
 }
 
 void GoogleBillingHelper::removeProductDetails(int tag, int productDetailsID) {

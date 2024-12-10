@@ -70,8 +70,8 @@ BillingClient::BillingClient(Builder* builder) {
 
 BillingClient::~BillingClient() {
     CC_ASSERT(_tag >= 0);
-    GoogleBillingHelper::removeBillingClient(_tag);
-    GoogleBillingManager::getInstance()->removeBillingClient(_tag);
+    GoogleBillingHelper::removeGoogleBilling(_tag);
+    GoogleBillingManager::getInstance()->removeGoogleBilling(_tag);
 }
 
 void BillingClient::startConnection(se::Object* listener) {

@@ -43,7 +43,7 @@ public:
         _billingClients.insert(std::make_pair(tag, client));
     }
     
-    void removeBillingClient(int tag) {
+    void removeGoogleBilling(int tag) {
         auto it = _billingClients.find(tag);
         if(it != _billingClients.end()) {
             _billingClients.erase(it);

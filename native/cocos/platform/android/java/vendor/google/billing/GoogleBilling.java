@@ -61,7 +61,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GoogleBilling {
+public final class GoogleBilling {
 
     private static final String TAG = GoogleBilling.class.getSimpleName();
     private Map<Integer, ProductDetails> _productDetails = new HashMap<>();
