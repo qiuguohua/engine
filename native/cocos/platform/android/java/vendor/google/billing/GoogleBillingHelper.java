@@ -67,7 +67,7 @@ public class GoogleBillingHelper {
     public static int newTag() {
         return billingTag++;
     }
-    public static void createBillingClient(int tag, BillingClient.Builder builder) {
+    public static void createGoogleBilling(int tag, BillingClient.Builder builder) {
         GlobalObject.runOnUiThread(new Runnable() {
             @Override
             public void run() {

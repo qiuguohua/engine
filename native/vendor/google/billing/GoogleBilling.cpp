@@ -61,7 +61,7 @@ BillingClient::BillingClient(Builder* builder) {
     this->_purchasesUpdatedListener = builder->_purchasesUpdatedListener;
     this->_userChoiceBillingListener = builder->_userChoiceBillingListener;
 
-    _tag = GoogleBillingHelper::createBillingClient(builder);
+    _tag = GoogleBillingHelper::createGoogleBilling(builder);
 
     CC_ASSERT(_tag >= 0);
     GoogleBillingManager::getInstance()->pushBillingClient(_tag, this);

@@ -96,7 +96,7 @@ public:
         return this->_signature;
     }
 
-    std::string toStr() const {
+    std::string toString() const {
         return this->_toString;
     }
 

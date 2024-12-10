@@ -151,10 +151,6 @@ public class GoogleBilling {
         return _billingClient.isReady();
     }
 
-    public boolean isConnected() {
-        return getConnectionState() == BillingClient.ConnectionState.CONNECTED;
-    }
-
     public void createAlternativeBillingOnlyReportingDetailsAsync(@NonNull AlternativeBillingOnlyReportingDetailsListener listener) {
         _billingClient.createAlternativeBillingOnlyReportingDetailsAsync(listener);
     }
@@ -173,50 +169,46 @@ public class GoogleBilling {
 
     public void queryProductDetailsAsync(String[] productIds, String[] productTypes,
                                          ProductDetailsResponseListener listener) {
-        if(!isConnected()) {
-            Log.e(TAG, "Must be connected before use this interface");
-            return;
-        }
         if(productIds.length == 0) {
-            Log.e(TAG, "Product ID cannot be empty");
+            Log.e(TAG, "Product id must be provided.");
             return;
         }
         if(productIds.length != productTypes.length) {
             Log.e(TAG, "Product ID does not match the number of product types");
             return;
         }
-        List<QueryProductDetailsParams.Product> products = new ArrayList<>();
-        for(int i = 0; i < productIds.length; ++i) {
-
-            String inputType;
-            if(productTypes[i].equals(BillingClient.ProductType.INAPP)) {
-                inputType = BillingClient.ProductType.INAPP;
-            } else if(productTypes[i].equals(BillingClient.ProductType.SUBS)) {
-                inputType = BillingClient.ProductType.SUBS;
-            } else {
-                Log.e(TAG, "Undefined product types.");
-                continue;
+        try {
+            List<QueryProductDetailsParams.Product> products = new ArrayList<>();
+            for(int i = 0; i < productIds.length; ++i) {
+                String inputType = "";
+                if(productTypes[i].equals(BillingClient.ProductType.INAPP)) {
+                    inputType = BillingClient.ProductType.INAPP;
+                } else if(productTypes[i].equals(BillingClient.ProductType.SUBS)) {
+                    inputType = BillingClient.ProductType.SUBS;
+                }
+                products.add(
+                    QueryProductDetailsParams.Product.newBuilder()
+                        .setProductId(productIds[i])
+                        .setProductType(inputType)
+                        .build());
             }
-            products.add(
-                QueryProductDetailsParams.Product.newBuilder()
-                    .setProductId(productIds[i])
-                    .setProductType(inputType)
-                    .build());
+            QueryProductDetailsParams params =
+                QueryProductDetailsParams.newBuilder().setProductList(products).build();
+            _billingClient.queryProductDetailsAsync(params, listener);
+        } catch (RuntimeException e) {
+            Log.e(TAG, e.getMessage());
         }
-        QueryProductDetailsParams params =
-            QueryProductDetailsParams.newBuilder().setProductList(products).build();
-        _billingClient.queryProductDetailsAsync(params, listener);
     }
     public void launchBillingFlow(BillingFlowParams params) {
-        _billingClient.launchBillingFlow(GlobalObject.getActivity(), params);
+        try {
+            _billingClient.launchBillingFlow(GlobalObject.getActivity(), params);
+        } catch (RuntimeException e) {
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     public void queryPurchasesAsync(String type, @NonNull PurchasesResponseListener listener) {
-        if(!isConnected()) {
-            Log.w(TAG, "Must be connected before use this interface");
-            return;
-        }
-        String inputType;
+        String inputType = "";
         if(type.equals(BillingClient.ProductType.INAPP)) {
             inputType = BillingClient.ProductType.INAPP;
         } else if(type.equals(BillingClient.ProductType.SUBS)) {
@@ -225,26 +217,42 @@ public class GoogleBilling {
             Log.w(TAG, "Undefined product types.");
             return;
         }
-        _billingClient.queryPurchasesAsync(QueryPurchasesParams.newBuilder()
-            .setProductType(inputType)
-            .build(), listener);
+        try {
+            _billingClient.queryPurchasesAsync(QueryPurchasesParams.newBuilder()
+                .setProductType(inputType)
+                .build(), listener);
+        } catch (RuntimeException e) {
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     public void consumeAsync(String purchaseToken, ConsumeResponseListener listener) {
-        _billingClient.consumeAsync(ConsumeParams.newBuilder()
-                .setPurchaseToken(purchaseToken).build(),
-            listener);
+        try {
+            _billingClient.consumeAsync(ConsumeParams.newBuilder()
+                    .setPurchaseToken(purchaseToken).build(),
+                listener);
+        } catch (RuntimeException e) {
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     public void acknowledgePurchase(@Nullable String purchaseToken, AcknowledgePurchaseResponseListener listener) {
-        _billingClient.acknowledgePurchase(
-            AcknowledgePurchaseParams.newBuilder().setPurchaseToken(purchaseToken).build(),
-            listener);
+        try {
+            _billingClient.acknowledgePurchase(
+                AcknowledgePurchaseParams.newBuilder().setPurchaseToken(purchaseToken).build(),
+                listener);
+        } catch (RuntimeException e) {
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     public void getBillingConfigAsync( @NonNull BillingConfigResponseListener listener) {
-        GetBillingConfigParams getBillingConfigParams = GetBillingConfigParams.newBuilder().build();
-        _billingClient.getBillingConfigAsync(getBillingConfigParams, listener);
+        try {
+            GetBillingConfigParams getBillingConfigParams = GetBillingConfigParams.newBuilder().build();
+            _billingClient.getBillingConfigAsync(getBillingConfigParams, listener);
+        } catch (RuntimeException e) {
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     public BillingResult showAlternativeBillingOnlyInformationDialog(@NonNull AlternativeBillingOnlyInformationDialogListener listener) {

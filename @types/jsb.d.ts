@@ -364,7 +364,7 @@ declare namespace jsb {
         getOfferToken(): string;
         getType(): string;
         toStr(): string;
-        equals(product: Product): boolean;
+        equals(product: UserChoiceDetailsProduct): boolean;
     }
     export class UserChoiceDetails {
         getExternalTransactionToken(): string;
@@ -501,7 +501,7 @@ declare namespace jsb {
      * @zh 代表一次性或订阅产品的详细信息。
      */
     export class ProductDetails {
-        static RecurrenceMode: jsb.RecurrenceMode;
+        static RecurrenceMode: typeof jsb.RecurrenceMode;
         equals(other: ProductDetails): boolean;
         /**
          * @en Hash code
@@ -768,7 +768,7 @@ declare namespace jsb {
         };
         getResponseCode(): number;
         getDebugMessage(): string;
-        toStr(): string;
+        toString(): string;
         public static newBuilder(): BillingResultBuilder;
     }
 
@@ -1302,7 +1302,7 @@ declare namespace jsb {
     }
 
     export interface ProductDetailsParamsBuilder {
-        setOfferToken: (purchaseToken: string) => ProductDetailsParamsBuilder;
+        setOfferToken: (offerToken: string) => ProductDetailsParamsBuilder;
         setProductDetails: (productDetails: ProductDetails) => ProductDetailsParamsBuilder;
         build: () => ProductDetailsParams;
     }
@@ -1312,7 +1312,7 @@ declare namespace jsb {
     }
 
     export interface SubscriptionUpdateParamsBuilder {
-        setOldPurcchaseToken: (purchaseToken: string) => SubscriptionUpdateParamsBuilder;
+        setOldPurchaseToken: (purchaseToken: string) => SubscriptionUpdateParamsBuilder;
         setOriginalExternalTransactionId: (externalTransactionId: string) => SubscriptionUpdateParamsBuilder;
         setSubscriptionReplacementMode: (subscriptionReplacementMode: number) => SubscriptionUpdateParamsBuilder;
         build: () => SubscriptionUpdateParams;
@@ -1411,135 +1411,6 @@ declare namespace jsb {
         showExternalOfferInformationDialog: (listener: ExternalOfferInformationDialogListener) => BillingResult;
         showInAppMessages: (params: InAppMessageParams, listener: InAppMessageResponseListener) => BillingResult;
     }
-
-    // /**
-    //  * @en Main interface for communication between the Google Play library and user application code.
-    //  * @zh 产品 ID。
-    //  */
-    // const googleBilling: {
-    //     enableAlternativeBillingOnly(): void;
-    //     enableExternalOffer(): void;
-    //     isEnabledForOneTimeProducts(): boolean;
-    //     isEnabledForPrepaidPlans(): boolean;
-    //     /**
-    //      * @en Starts up BillingClient setup process asynchronously.
-    //      * @zh 异步启动 BillingClient 设置过程。
-    //      */
-    //     startConnection(): void;
-
-    //     /**
-    //      * @en Closes the connection and releases all held resources such as service connections.
-    //      * @zh 关闭连接并释放所有持有的资源，例如服务连接。
-    //      */
-    //     endConnection(): void;
-
-    //     /**
-    //      * @en Get the current billing client connection state.
-    //      * @zh 获取当前计费客户端连接状态。
-    //      */
-    //     getConnectionState(): number;
-
-    //     /**
-    //      * @en Checks if the client is currently connected to the service, so that requests to other methods will succeed.
-    //            Returns true if the client is currently connected to the service, false otherwise.
-    //      * @zh 检查客户端当前是否连接到服务，以便对其他方法的请求能够成功。
-    //            如果客户端当前已连接到服务，则返回 true，否则返回 false。
-    //      */
-    //     isReady(): boolean;
-
-    //     /**
-    //      * @en Performs a network query the details of products available for sale in your app.
-    //      * @zh 执行网络查询您的应用中可供销售的产品的详细信息。
-    //      */
-    //     queryProductDetailsAsync(productId: string[], productType: string[]): void;
-    //     /**
-    //      * @en Initiates the billing flow for an in-app purchase or subscription.
-    //      * @zh 启动应用内购买或订阅的计费流程。
-    //      */
-    //     launchBillingFlow(productDetails: ProductDetails[], selectedOfferToken: string | null): void;
-    //     /**
-    //      * @en Consumes a given in-app product.
-    //      * @zh 消费指定的应用内产品。
-    //      */
-    //     consumeAsync(purchases: Purchase[]): void;
-    //     /**
-    //      * @en Returns purchases details for currently owned items bought within your app.
-    //      * @zh 返回您应用内当前拥有的购买商品的购买详情。
-    //      */
-    //     queryPurchasesAsync(productType: string): void;
-    //     /**
-    //      * @en Acknowledges in-app purchases..
-    //      * @zh 确认应用内购买。
-    //      */
-    //     acknowledgePurchase(purchases: Purchase[]): void;
-    //     /**
-    //      * @en Gets the billing config, which stores configuration used to perform billing operations.
-    //      * @zh 获取计费配置，其中存储用于执行计费操作的配置。
-    //      */
-    //     getBillingConfigAsync(): void;
-
-    //     /**
-    //      * @en Creates alternative billing only purchase details that can be used to report a transaction made via alternative billing without user choice to use Google Play billing.
-    //      * @zh 创建仅限替代结算的购买详情，可用于报告通过替代结算进行的交易，而无需用户选择使用 Google Play Billing。
-    //      */
-    //     createAlternativeBillingOnlyReportingDetailsAsync(): void;
-    //     /**
-    //      * @en Checks the availability of offering alternative billing without user choice to use Google Play Billing.
-    //      * @zh 检查是否可以提供替代结算方式，而无需用户选择使用 Google Play Billing方式。
-    //      */
-    //     isAlternativeBillingOnlyAvailableAsync(): void;
-
-    //     /**
-    //      * @en Creates purchase details that can be used to report a transaction made via external offer.
-    //      * @zh 创建可用于报告通过外部报价进行的交易的购买详情。
-    //      */
-    //     createExternalOfferReportingDetailsAsync(): void;
-    //     /**
-    //      * @en Checks the availability of providing external offer.
-    //      * @zh 检查提供外部报价的可用性。
-    //      */
-    //     isExternalOfferAvailableAsync(): void;
-
-    //     /**
-    //      * @en Checks if the specified feature or capability is supported by the Play Store.
-    //      * @zh 检查 Play Store 是否支持指定的功能。
-    //      */
-    //     isFeatureSupported(feature: string): BillingResult;
-
-    //     /**
-    //      * @en Shows the alternative billing only information dialog on top of the calling app.
-    //      * @zh 在调用应用程序顶部显示仅显示备用计费信息对话框。
-    //      */
-    //     showAlternativeBillingOnlyInformationDialog(): BillingResult;
-
-    //     /**
-    //      * @en Shows the external offer information dialog on top of the calling app.
-    //      * @zh 在调用应用程序顶部显示外部优惠信息对话框。
-    //      */
-    //     showExternalOfferInformationDialog(): BillingResult;
-
-    //     /**
-    //      * @en Overlays billing related messages on top of the calling app.
-    //      * @zh 在调用应用程序上叠加与计费相关的消息。
-    //      */
-    //     showInAppMessages(): BillingResult;
-    // } | undefined;
-    // export let onBillingSetupFinished: (result: BillingResult) => void | undefined;
-    // export let onBillingServiceDisconnected: () => void | undefined;
-    // export let onProductDetailsResponse: (result: BillingResult, productDetailsList: ProductDetails[]) => void | undefined;
-    // export let onPurchasesUpdated: (result: BillingResult, purchaseList: Purchase[]) => void | undefined;
-    // export let userSelectedAlternativeBilling: (userChoiceDetails: UserChoiceDetails) => void;
-    // export let onConsumeResponse: (result: BillingResult, purchaseToken: string) => void | undefined;
-    // export let onAcknowledgePurchaseResponse: (result: BillingResult) => void | undefined;
-    // export let onQueryPurchasesResponse: (result: BillingResult, purchaseList: Purchase[]) => void | undefined;
-    // export let onBillingConfigResponse: (result: BillingResult, config: BillingConfig) => void | undefined;
-    // export let onAlternativeBillingOnlyTokenResponse: (result: BillingResult, details: AlternativeBillingOnlyReportingDetails) => void | undefined;
-    // export let onExternalOfferReportingDetailsResponse: (result: BillingResult, details: ExternalOfferReportingDetails) => void | undefined;
-    // export let onAlternativeBillingOnlyAvailabilityResponse: (result: BillingResult) => void | undefined;
-    // export let onExternalOfferAvailabilityResponse: (result: BillingResult) => void | undefined;
-    // export let onAlternativeBillingOnlyInformationDialogResponse: (result: BillingResult) => void | undefined;
-    // export let onExternalOfferInformationDialogResponse: (result: BillingResult) => void | undefined;
-    // export let onInAppMessageResponse: (result: InAppMessageResult) => void | undefined;
 }
 
 declare namespace ns {

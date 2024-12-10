@@ -195,7 +195,7 @@ public:
         return this->_title;
     }
 
-    std::string toStr() const {
+    std::string toString() const {
         return this->_toString;
     }
 

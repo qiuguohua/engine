@@ -40,7 +40,7 @@ public:
         return this->_debugMessage;
     }
 
-    std::string toStr() const {
+    std::string toString() const {
         return this->_toString;
     }
     class Builder {
@@ -68,7 +68,6 @@ public:
     static Builder* newBuilder() {
         return new Builder();
     }
-
 private:
     friend class JniBilling;
     int _responseCode{0};

@@ -91,12 +91,12 @@ template void callJSfunc(se::Object* obj, const char*, BillingResult*&&, Alterna
 template void callJSfunc(se::Object* obj, const char*, BillingResult*&&, ExternalOfferReportingDetails*&&);
 template void callJSfunc(se::Object* obj, const char*, InAppMessageResult*&&);
 
-int GoogleBillingHelper::createBillingClient(BillingClient::Builder* builder) {
+int GoogleBillingHelper::createGoogleBilling(BillingClient::Builder* builder) {
     int tag = JniHelper::callStaticIntMethod(JCLS_BILLING, "newTag");
     jobject buildObj = JniBilling::newBillingClientBuilderObject(tag, builder);
 
     cc::JniMethodInfo t;
-    cc::JniHelper::getStaticMethodInfo(t, JCLS_BILLING, "createBillingClient", "(ILcom/android/billingclient/api/BillingClient$Builder;)V");
+    cc::JniHelper::getStaticMethodInfo(t, JCLS_BILLING, "createGoogleBilling", "(ILcom/android/billingclient/api/BillingClient$Builder;)V");
     t.env->CallStaticVoidMethod(t.classID, t.methodID, tag, buildObj);
 
     return tag;

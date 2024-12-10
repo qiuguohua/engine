@@ -23,27 +23,29 @@
  THE SOFTWARE.
 *****************************************************************************/
 
-import { EventTarget } from '../../../cocos/core/event';
+import { JSB } from 'internal:constants';
 import './billing-enum';
+
+declare const jsb: any;
 
 export namespace google {
     export namespace billing {
-        export const BillingClient = jsb.BillingClient;
-        export const BillingResult = jsb.BillingResult;
+        export const BillingClient = JSB ? jsb.BillingClient : null;
+        export const BillingResult = JSB ? jsb.BillingResult : null;
 
-        export const PendingPurchasesParams = jsb.PendingPurchasesParams;
+        export const PendingPurchasesParams = JSB ? jsb.PendingPurchasesParams : null;
 
         // export const ProductDetailsParams = jsb.ProductDetailsParams;
-        export const QueryProductDetailsParams = jsb.QueryProductDetailsParams;
+        export const QueryProductDetailsParams = JSB ? jsb.QueryProductDetailsParams : null;
 
-        export const Product = jsb.Product;
-        export const BillingFlowParams = jsb.BillingFlowParams;
+        export const Product = JSB ? jsb.Product : null;
+        export const BillingFlowParams = JSB ? jsb.BillingFlowParams : null;
 
-        export const ConsumeParams = jsb.ConsumeParams;
-        export const AcknowledgePurchaseParams = jsb.AcknowledgePurchaseParams;
-        export const QueryPurchasesParams = jsb.QueryPurchasesParams;
-        export const InAppMessageParams = jsb.InAppMessageParams;
-        export const GetBillingConfigParams = jsb.GetBillingConfigParams;
+        export const ConsumeParams = JSB ? jsb.ConsumeParams : null;
+        export const AcknowledgePurchaseParams = JSB ? jsb.AcknowledgePurchaseParams : null;
+        export const QueryPurchasesParams = JSB ? jsb.QueryPurchasesParams : null;
+        export const InAppMessageParams = JSB ? jsb.InAppMessageParams : null;
+        export const GetBillingConfigParams = JSB ? jsb.GetBillingConfigParams : null;
     }
 }
 
