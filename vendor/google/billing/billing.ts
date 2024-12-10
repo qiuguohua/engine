@@ -26,26 +26,25 @@
 import { JSB } from 'internal:constants';
 import './billing-enum';
 
-declare const jsb: any;
-
+const ns = JSB ? jsb : {} as unknown as typeof jsb;
 export namespace google {
     export namespace billing {
-        export const BillingClient = JSB ? jsb.BillingClient : null as unknown as typeof jsb.BillingClient;
-        export const BillingResult = JSB ? jsb.BillingResult : null as unknown as typeof jsb.BillingResult;
+        export const BillingClient = ns.BillingClient;
+        export const BillingResult = ns.BillingResult;
 
-        export const PendingPurchasesParams = JSB ? jsb.PendingPurchasesParams : null as unknown as typeof jsb.PendingPurchasesParams;
+        export const PendingPurchasesParams = ns.PendingPurchasesParams;
 
-        // export const ProductDetailsParams = jsb.ProductDetailsParams;
-        export const QueryProductDetailsParams = JSB ? jsb.QueryProductDetailsParams : null as unknown as typeof jsb.QueryProductDetailsParams;
+        // export const ProductDetailsParams = ns.ProductDetailsParams;
+        export const QueryProductDetailsParams = ns.QueryProductDetailsParams;
 
-        export const Product = JSB ? jsb.Product : null as unknown as typeof jsb.Product;
-        export const BillingFlowParams = JSB ? jsb.BillingFlowParams : null as unknown as typeof jsb.BillingFlowParams;
+        export const Product = ns.Product;
+        export const BillingFlowParams = ns.BillingFlowParams;
 
-        export const ConsumeParams = JSB ? jsb.ConsumeParams : null as unknown as typeof jsb.ConsumeParams;
-        export const AcknowledgePurchaseParams = JSB ? jsb.AcknowledgePurchaseParams : null as unknown as typeof jsb.AcknowledgePurchaseParams;
-        export const QueryPurchasesParams = JSB ? jsb.QueryPurchasesParams : null as unknown as typeof jsb.QueryPurchasesParams;
-        export const InAppMessageParams = JSB ? jsb.InAppMessageParams : null as unknown as typeof jsb.InAppMessageParams;
-        export const GetBillingConfigParams = JSB ? jsb.GetBillingConfigParams : null as unknown as typeof jsb.GetBillingConfigParams;
+        export const ConsumeParams = ns.ConsumeParams;
+        export const AcknowledgePurchaseParams = ns.AcknowledgePurchaseParams;
+        export const QueryPurchasesParams = ns.QueryPurchasesParams;
+        export const InAppMessageParams = ns.InAppMessageParams;
+        export const GetBillingConfigParams = ns.GetBillingConfigParams;
     }
 }
 export declare namespace google {
