@@ -33,8 +33,8 @@ ProductDetails::~ProductDetails() {
         delete _oneTimePurchaseOfferDetails;
         _oneTimePurchaseOfferDetails = nullptr;
     }
-    for (auto* ptr : _subscriptionOfferDetails) {
-        delete ptr;
+    for (auto* details : _subscriptionOfferDetails) {
+        delete details;
     }
     _subscriptionOfferDetails.clear();
     GoogleBillingHelper::removeProductDetails(_tag, _id);

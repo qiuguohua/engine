@@ -112,7 +112,7 @@ public:
     }
     ~Purchase() override;
     bool equals(const Purchase& other) const {
-        return this->_hashCode == other._hashCode;
+        return this->_originalJson == other._originalJson && this->_signature == other._signature;
     }
 
 private:

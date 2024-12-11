@@ -326,7 +326,7 @@ cc::UserChoiceDetails::Product* JniBilling::toUserChoiceDetailsProduct(JNIEnv* e
     product->_id = callStringMethod(env, clazz, obj, "getId");
     product->_offerToken = callStringMethod(env, clazz, obj, "getOfferToken");
     product->_type = callStringMethod(env, clazz, obj, "getType");
-    product->_toStr = callStringMethod(env, clazz, obj, "toString");
+    product->_toString = callStringMethod(env, clazz, obj, "toString");
     return product;
 }
 
@@ -382,7 +382,7 @@ jobject JniBilling::newSubscriptionUpdateParamsObject(BillingFlowParams::Subscri
     return env->CallObjectMethod(builder, buildMethodIdMethodId);
 }
 
-jobject JniBilling::newProductDetailsParamsObject(BillingFlowParams::ProductDetailsParams* params) {
+jobject JniBilling::newProductDetailsParamsObject(int tag, BillingFlowParams::ProductDetailsParams* params) {
     auto* env = JniHelper::getEnv();
     cc::JniMethodInfo t;
     cc::JniHelper::getStaticMethodInfo(t, "com/android/billingclient/api/BillingFlowParams$ProductDetailsParams", "newBuilder", "()Lcom/android/billingclient/api/BillingFlowParams$ProductDetailsParams$Builder;");
@@ -396,7 +396,7 @@ jobject JniBilling::newProductDetailsParamsObject(BillingFlowParams::ProductDeta
 
     cc::JniMethodInfo t2;
     cc::JniHelper::getStaticMethodInfo(t2, JCLS_BILLING, "getProductDetailsObject", "(II)Lcom/android/billingclient/api/ProductDetails;");
-    jobject productDetailsObject = t2.env->CallStaticObjectMethod(t2.classID, t2.methodID, 0, params->_productDetails->_id);
+    jobject productDetailsObject = t2.env->CallStaticObjectMethod(t2.classID, t2.methodID, tag, params->_productDetails->_id);
     jmethodID setProductDetailsMethodId = env->GetMethodID(builderClass, "setProductDetails", "(Lcom/android/billingclient/api/ProductDetails;)Lcom/android/billingclient/api/BillingFlowParams$ProductDetailsParams$Builder;");
     env->CallObjectMethod(builder, setProductDetailsMethodId, productDetailsObject);
 
@@ -404,19 +404,19 @@ jobject JniBilling::newProductDetailsParamsObject(BillingFlowParams::ProductDeta
     return env->CallObjectMethod(builder, buildMethodId);
 }
 
-jobject JniBilling::newProductDetailsParamsListObject(std::vector<BillingFlowParams::ProductDetailsParams*> listParams) {
+jobject JniBilling::newProductDetailsParamsListObject(int tag, std::vector<BillingFlowParams::ProductDetailsParams*> listParams) {
     JNIEnv *env = cc::JniHelper::getEnv();
     jclass listClass = env->FindClass("java/util/ArrayList");
     jmethodID methodInit = env->GetMethodID(listClass, "<init>", "()V"); /* 无参构造 */
     jobject list = env->NewObjectA(listClass, methodInit, 0);
     jmethodID methodAdd = env->GetMethodID(listClass, "add", "(Ljava/lang/Object;)Z");
     for(auto param : listParams) {
-        env->CallBooleanMethod(list, methodAdd, newProductDetailsParamsObject(param));
+        env->CallBooleanMethod(list, methodAdd, newProductDetailsParamsObject(tag, param));
     }
     return list;
 }
 
-jobject JniBilling::newBillingFlowParamsObject(BillingFlowParams* params) {
+jobject JniBilling::newBillingFlowParamsObject(int tag, BillingFlowParams* params) {
     JNIEnv *env = cc::JniHelper::getEnv();
     cc::JniMethodInfo t;
     cc::JniHelper::getStaticMethodInfo(t, "com/android/billingclient/api/BillingFlowParams", "newBuilder", "()Lcom/android/billingclient/api/BillingFlowParams$Builder;");
@@ -432,7 +432,7 @@ jobject JniBilling::newBillingFlowParamsObject(BillingFlowParams* params) {
     jmethodID setObfuscatedProfileIdMethodId = env->GetMethodID(builderClass, "setObfuscatedProfileId", "(Ljava/lang/String;)Lcom/android/billingclient/api/BillingFlowParams$Builder;");
     env->CallObjectMethod(builder, setObfuscatedProfileIdMethodId, cc::StringUtils::newStringUTFJNI(env, params->_obfuscatedProfileId));
 
-    jobject listObjs = JniBilling::newProductDetailsParamsListObject(params->_productDetailsParamsList);
+    jobject listObjs = JniBilling::newProductDetailsParamsListObject(tag, params->_productDetailsParamsList);
     jmethodID setProductDetailsParamsListMethodId = env->GetMethodID(builderClass, "setProductDetailsParamsList", "(Ljava/util/List;)Lcom/android/billingclient/api/BillingFlowParams$Builder;");
     env->CallObjectMethod(builder, setProductDetailsParamsListMethodId, listObjs);
 

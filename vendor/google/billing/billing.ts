@@ -31,43 +31,60 @@ export namespace google {
     export namespace billing {
         export const BillingClient = ns.BillingClient;
         export const BillingResult = ns.BillingResult;
-
+        export const InAppMessageResult = ns.InAppMessageResult;
+        export const ProductDetails = ns.ProductDetails;
+        export const Purchase = ns.Purchase;
         export const PendingPurchasesParams = ns.PendingPurchasesParams;
-
-        // export const ProductDetailsParams = ns.ProductDetailsParams;
         export const QueryProductDetailsParams = ns.QueryProductDetailsParams;
-
-        export const Product = ns.Product;
         export const BillingFlowParams = ns.BillingFlowParams;
-
         export const ConsumeParams = ns.ConsumeParams;
         export const AcknowledgePurchaseParams = ns.AcknowledgePurchaseParams;
         export const QueryPurchasesParams = ns.QueryPurchasesParams;
-        export const InAppMessageParams = ns.InAppMessageParams;
         export const GetBillingConfigParams = ns.GetBillingConfigParams;
+        export const InAppMessageParams = ns.InAppMessageParams;
     }
 }
 export declare namespace google {
     export namespace billing {
-        export type UserChoiceDetails = jsb.UserChoiceDetails;
-        export type OneTimePurchaseOfferDetails = jsb.OneTimePurchaseOfferDetails;
-        export type InstallmentPlanDetails = jsb.InstallmentPlanDetails;
-        export type PricingPhase = jsb.PricingPhase;
-        export type SubscriptionOfferDetails = jsb.SubscriptionOfferDetails;
+        export type AcknowledgePurchaseResponseListener = jsb.AcknowledgePurchaseResponseListener;
+        export type AlternativeBillingOnlyAvailabilityListener = jsb.AlternativeBillingOnlyAvailabilityListener;
+        export type AlternativeBillingOnlyInformationDialogListener = jsb.AlternativeBillingOnlyInformationDialogListener;
+        export type AlternativeBillingOnlyReportingDetailsListener = jsb.AlternativeBillingOnlyReportingDetailsListener;
+        export type BillingConfigResponseListener = jsb.BillingConfigResponseListener;
+        export type ConsumeResponseListener = jsb.ConsumeResponseListener;
+        export type ExternalOfferAvailabilityListener = jsb.ExternalOfferAvailabilityListener;
+        export type ExternalOfferInformationDialogListener = jsb.ExternalOfferInformationDialogListener;
+        export type ExternalOfferReportingDetailsListener = jsb.ExternalOfferReportingDetailsListener;
+        export type InAppMessageResponseListener = jsb.InAppMessageResponseListener;
+        export type ProductDetailsResponseListener = jsb.ProductDetailsResponseListener;
+        export type PurchasesResponseListener = jsb.PurchasesResponseListener;
+        export type PurchasesUpdatedListener = jsb.PurchasesUpdatedListener;
+        export type UserChoiceBillingListener = jsb.UserChoiceBillingListener;
+        export type BillingClientStateListener = jsb.BillingClientStateListener;
 
+        export type UserChoiceDetails = jsb.UserChoiceDetails;
         export type AccountIdentifiers = jsb.AccountIdentifiers;
         export type PendingPurchaseUpdate = jsb.PendingPurchaseUpdate;
-
         export type BillingConfig = jsb.BillingConfig;
         export type AlternativeBillingOnlyReportingDetails = jsb.AlternativeBillingOnlyReportingDetails;
         export type ExternalOfferReportingDetails = jsb.ExternalOfferReportingDetails;
+        export namespace InAppMessageResult {
+            export type InAppMessageResponseCode = jsb.InAppMessageResponseCode;
+        }
         export type InAppMessageResult = jsb.InAppMessageResult;
 
-        export type BillingResult = jsb.BillingResult;
+        export namespace PendingPurchasesParams {
+            export type Builder = jsb.PendingPurchasesParamsBuilder;
+        }
         export type PendingPurchasesParams = jsb.PendingPurchasesParams;
 
         export namespace ProductDetails {
             export type RecurrenceMode = jsb.RecurrenceMode;
+            export type OneTimePurchaseOfferDetails = jsb.OneTimePurchaseOfferDetails;
+            export type InstallmentPlanDetails = jsb.InstallmentPlanDetails;
+            export type PricingPhase = jsb.PricingPhase;
+            export type PricingPhases = jsb.PricingPhases;
+            export type SubscriptionOfferDetails = jsb.SubscriptionOfferDetails;
         }
         export type ProductDetails = jsb.ProductDetails;
 
@@ -76,23 +93,60 @@ export declare namespace google {
         }
         export type Purchase = jsb.Purchase;
 
+        export namespace BillingClient {
+            export type Builder = jsb.BillingClientBuilder;
+        }
         export type BillingClient = jsb.BillingClient;
         export namespace BillingFlowParams {
             export type Builder = jsb.BillingFlowParamsBuilder;
+            export namespace SubscriptionUpdateParams {
+                export type Builder = jsb.SubscriptionUpdateParamsBuilder;
+            }
             export type SubscriptionUpdateParams = jsb.SubscriptionUpdateParams;
+            export namespace ProductDetailsParams {
+                export type Builder = jsb.ProductDetailsParamsBuilder;
+            }
             export type ProductDetailsParams = jsb.ProductDetailsParams;
+
         }
         export type BillingFlowParams = jsb.BillingFlowParams;
 
         export namespace QueryProductDetailsParams {
-            export type Product = jsb.Product;
+            export type Builder = jsb.QueryProductDetailsParamsBuilder;
+            export namespace Product {
+                export type Builder = jsb.QueryProductDetailsParamsProductBuilder;
+            }
+            export type Product = jsb.QueryProductDetailsParamsProduct;
         }
         export type QueryProductDetailsParams = jsb.QueryProductDetailsParams;
 
+        export namespace BillingResult {
+            export type Builder = jsb.BillingResultBuilder;
+        }
+        export type BillingResult = jsb.BillingResult;
+
+        export namespace ConsumeParams {
+            export type Builder = jsb.ConsumeParamsBuilder;
+        }
         export type ConsumeParams = jsb.ConsumeParams;
+
+        export namespace AcknowledgePurchaseParams {
+            export type Builder = jsb.AcknowledgePurchaseParamsBuilder;
+        }
         export type AcknowledgePurchaseParams = jsb.AcknowledgePurchaseParams;
+
+        export namespace QueryPurchasesParams {
+            export type Builder = jsb.QueryPurchasesParamsBuilder;
+        }
         export type QueryPurchasesParams = jsb.QueryPurchasesParams;
+
+        namespace InAppMessageParams {
+            export type Builder = jsb.InAppMessageParamsBuilder;
+        }
         export type InAppMessageParams = jsb.InAppMessageParams;
+        namespace GetBillingConfigParams {
+            export type Builder = jsb.GetBillingConfigParams;
+        }
         export type GetBillingConfigParams = jsb.GetBillingConfigParams;
 
     }

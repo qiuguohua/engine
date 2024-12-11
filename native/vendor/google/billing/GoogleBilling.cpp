@@ -23,9 +23,9 @@
 ****************************************************************************/
 
 #include "vendor/google/billing/GoogleBilling.h"
+#include "cocos/bindings/jswrapper/SeApi.h"
 #include "platform/java/jni/JniHelper.h"
 #include "platform/java/jni/JniImp.h"
-#include "cocos/bindings/jswrapper/SeApi.h"
 #include "vendor/google/billing/GoogleBillingHelper.h"
 #include "vendor/google/billing/GoogleBillingManager.h"
 #include "vendor/google/billing/build-params/AcknowledgePurchaseParams.h"
@@ -39,20 +39,39 @@
 
 namespace cc {
 
+#define ADD_JS_OBJ_REF(obj) \
+    do {                    \
+        obj->root();        \
+        obj->incRef();      \
+    } while (0)
+
+#define DEL_JS_OBJ_REF(obj) \
+    do {                    \
+        if (obj) {          \
+            obj->unroot();  \
+            obj->decRef();  \
+        }                   \
+    } while (0)
+
 BillingClient::Builder& BillingClient::Builder::enableUserChoiceBilling(se::Object* listener) {
-    listener->root();
-    listener->incRef();
+    if (!listener) {
+        CC_LOG_WARNING("Can't set an empty listener.");
+        return *this;
+    }
+    ADD_JS_OBJ_REF(listener);
     _userChoiceBillingListener = listener;
     return *this;
 }
 
 BillingClient::Builder& BillingClient::Builder::setListener(se::Object* listener) {
-    listener->root();
-    listener->incRef();
+    if (!listener) {
+        CC_LOG_WARNING("Can't set an empty listener.");
+        return *this;
+    }
+    ADD_JS_OBJ_REF(listener);
     _purchasesUpdatedListener = listener;
     return *this;
 }
-
 
 BillingClient::BillingClient(Builder* builder) {
     this->_enableAlternativeBillingOnly = builder->_enableAlternativeBillingOnly;
@@ -68,10 +87,33 @@ BillingClient::BillingClient(Builder* builder) {
     delete builder;
 }
 
+void BillingClient::RemoveJsObject(std::vector<se::Object*>* listeners) {
+    for (auto* listener : *listeners) {
+        DEL_JS_OBJ_REF(listener);
+    }
+    listeners->clear();
+}
+
 BillingClient::~BillingClient() {
     CC_ASSERT(_tag >= 0);
     GoogleBillingHelper::removeGoogleBilling(_tag);
     GoogleBillingManager::getInstance()->removeGoogleBilling(_tag);
+
+    DEL_JS_OBJ_REF(_purchasesUpdatedListener);
+    DEL_JS_OBJ_REF(_userChoiceBillingListener);
+    RemoveJsObject(&_billingClientStateListeners);
+    RemoveJsObject(&_productDetailsResponseListeners);
+    RemoveJsObject(&_consumeResponseListeners);
+    RemoveJsObject(&_acknowledgePurchaseResponseListeners);
+    RemoveJsObject(&_queryPurchasesResponseListeners);
+    RemoveJsObject(&_alternativeBillingOnlyReportingDetailsListeners);
+    RemoveJsObject(&_alternativeBillingOnlyAvailabilityListeners);
+    RemoveJsObject(&_externalOfferReportingDetailsListeners);
+    RemoveJsObject(&_externalOfferAvailabilityListeners);
+    RemoveJsObject(&_alternativeBillingOnlyInformationDialogListeners);
+    RemoveJsObject(&_externalOfferInformationDialogListeners);
+    RemoveJsObject(&_inappListeners);
+    RemoveJsObject(&_billingConfigListeners);
 }
 
 void BillingClient::startConnection(se::Object* listener) {

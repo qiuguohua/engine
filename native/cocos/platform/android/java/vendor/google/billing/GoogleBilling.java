@@ -77,7 +77,11 @@ public final class GoogleBilling {
     public GoogleBilling(int tag, BillingClient.Builder builder) {
         assert tag >= 0 && builder != null;
         this._tag = tag;
-        _billingClient = builder.build();
+        try {
+            _billingClient = builder.build();
+        } catch (RuntimeException e) {
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     public void removeProductDetails(int productDetailsId) {

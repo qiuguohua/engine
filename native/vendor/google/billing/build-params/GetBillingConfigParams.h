@@ -45,8 +45,7 @@ public:
     }
 
 private:
-    GetBillingConfigParams() {
-    }
+    GetBillingConfigParams() = default;
 };
 
 

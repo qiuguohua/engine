@@ -188,7 +188,7 @@ BillingResult* GoogleBillingHelper::showInAppMessages(int tag, int callbackId, c
 void GoogleBillingHelper::launchBillingFlow(int tag, BillingFlowParams* params) {
     cc::JniMethodInfo t1;
     cc::JniHelper::getStaticMethodInfo(t1, JCLS_BILLING, "launchBillingFlow", "(ILcom/android/billingclient/api/BillingFlowParams;)V");
-    t1.env->CallStaticVoidMethod(t1.classID, t1.methodID, tag, JniBilling::newBillingFlowParamsObject(params));
+    t1.env->CallStaticVoidMethod(t1.classID, t1.methodID, tag, JniBilling::newBillingFlowParamsObject(tag, params));
 }
 
 void GoogleBillingHelper::consumeAsync(int tag, int callbackId, ConsumeParams* purchase) {

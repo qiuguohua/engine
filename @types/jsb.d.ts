@@ -363,7 +363,7 @@ declare namespace jsb {
         getId(): string;
         getOfferToken(): string;
         getType(): string;
-        toStr(): string;
+        toString(): string;
         equals(product: UserChoiceDetailsProduct): boolean;
     }
     export class UserChoiceDetails {
@@ -502,6 +502,7 @@ declare namespace jsb {
      */
     export class ProductDetails {
         static RecurrenceMode: typeof jsb.RecurrenceMode;
+
         equals(other: ProductDetails): boolean;
         /**
          * @en Hash code
@@ -688,7 +689,7 @@ declare namespace jsb {
          * @en To string
          * @zh 转换成字符串
          */
-        toStr(): string;
+        toString(): string;
 
         /**
          * @en Returns account identifiers that were provided when the purchase was made.
@@ -744,7 +745,8 @@ declare namespace jsb {
      * @en Results related to in-app messaging.
      * @zh 与应用程序内消息相关的结果。
      */
-    export interface InAppMessageResult {
+    export class InAppMessageResult {
+        static InAppMessageResponseCode: typeof InAppMessageResponseCode;
         /**
          * @en Response code for the in-app messaging API call.
          * @zh 应用内消息传递 API 调用的响应代码。
@@ -763,9 +765,8 @@ declare namespace jsb {
         build(): BillingResult;
     }
     export class BillingResult {
-        static Builder: {
-            new(): BillingResultBuilder
-        };
+        private constructor();
+        static Builder: BillingResultBuilder;
         getResponseCode(): number;
         getDebugMessage(): string;
         toString(): string;
@@ -800,22 +801,22 @@ declare namespace jsb {
         public static newBuilder(): PendingPurchasesParamsBuilder;
     }
 
-    export interface ProductBuilder {
-        setProductId: (productID: string) => ProductBuilder;
-        setProductType: (productType: string) => ProductBuilder;
-        build: () => Product;
+    export interface QueryProductDetailsParamsProductBuilder {
+        setProductId: (productID: string) => QueryProductDetailsParamsProductBuilder;
+        setProductType: (productType: string) => QueryProductDetailsParamsProductBuilder;
+        build: () => QueryProductDetailsParamsProduct;
     }
-    export class Product {
+    export class QueryProductDetailsParamsProduct {
         private constructor();
-        public static newBuilder(): ProductBuilder;
+        public static newBuilder(): QueryProductDetailsParamsProductBuilder;
     }
 
     export interface QueryProductDetailsParamsBuilder {
-        setProductList: (products: Product[]) => QueryProductDetailsParamsBuilder;
+        setProductList: (products: QueryProductDetailsParamsProduct[]) => QueryProductDetailsParamsBuilder;
         build: () => QueryProductDetailsParams;
     }
     export class QueryProductDetailsParams {
-        static Product: typeof jsb.Product;
+        static Product: typeof jsb.QueryProductDetailsParamsProduct;
         private constructor();
         public static newBuilder(): QueryProductDetailsParamsBuilder;
     }
@@ -1308,6 +1309,7 @@ declare namespace jsb {
     }
     export class ProductDetailsParams {
         private constructor();
+        static Builder: ProductDetailsParamsBuilder;
         static newBuilder: () => ProductDetailsParamsBuilder;
     }
 
@@ -1319,7 +1321,8 @@ declare namespace jsb {
     }
     export class SubscriptionUpdateParams {
         private constructor();
-        static newBuilder(): () => SubscriptionUpdateParamsBuilder;
+        static Builder: SubscriptionUpdateParamsBuilder;
+        static newBuilder: () => SubscriptionUpdateParamsBuilder;
         static ReplacementMode: typeof jsb.ReplacementMode;
     }
 

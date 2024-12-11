@@ -77,9 +77,10 @@ public:
         bool _enableAlternativeBillingOnly;
         bool _enableExternalOffer;
         PendingPurchasesParams* _pendingPurchasesParams;
-        se::Object* _purchasesUpdatedListener;
-        se::Object* _userChoiceBillingListener;
+        se::Object* _purchasesUpdatedListener{nullptr};
+        se::Object* _userChoiceBillingListener{nullptr};
     };
+
     static Builder* newBuilder() {
         return new Builder();
     }
@@ -94,7 +95,6 @@ public:
     void acknowledgePurchase(AcknowledgePurchaseParams* params, se::Object* listener);
     void queryPurchasesAsync(QueryPurchasesParams* parmas, se::Object* listener);
     void getBillingConfigAsync(GetBillingConfigParams* params, se::Object* listener);
-
     void createAlternativeBillingOnlyReportingDetailsAsync(se::Object* listener);
     void isAlternativeBillingOnlyAvailableAsync(se::Object* listener);
     void createExternalOfferReportingDetailsAsync(se::Object* listener);
@@ -106,31 +106,29 @@ public:
 private:
     BillingClient(Builder* builder);
     ~BillingClient();
+    void RemoveJsObject(std::vector<se::Object*>* listeners);
+
 private:
     friend class GoogleBillingHelper;
     int _tag{-1};
     bool _enableAlternativeBillingOnly{false};
     bool _enableExternalOffer{false};
+    PendingPurchasesParams* _pendingPurchasesParams{nullptr};
 
     se::Object* _purchasesUpdatedListener{nullptr};
     se::Object* _userChoiceBillingListener{nullptr};
-    PendingPurchasesParams* _pendingPurchasesParams{nullptr};
-
     std::vector<se::Object*> _billingClientStateListeners;
     std::vector<se::Object*> _productDetailsResponseListeners;
     std::vector<se::Object*> _consumeResponseListeners;
     std::vector<se::Object*> _acknowledgePurchaseResponseListeners;
     std::vector<se::Object*> _queryPurchasesResponseListeners;
-
     std::vector<se::Object*> _alternativeBillingOnlyReportingDetailsListeners;
     std::vector<se::Object*> _alternativeBillingOnlyAvailabilityListeners;
     std::vector<se::Object*> _externalOfferReportingDetailsListeners;
     std::vector<se::Object*> _externalOfferAvailabilityListeners;
-
     std::vector<se::Object*> _alternativeBillingOnlyInformationDialogListeners;
     std::vector<se::Object*> _externalOfferInformationDialogListeners;
     std::vector<se::Object*> _inappListeners;
-    
     std::vector<se::Object*> _billingConfigListeners;
 };
 

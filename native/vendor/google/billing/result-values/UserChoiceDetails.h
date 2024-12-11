@@ -46,8 +46,8 @@ public:
         std::string getType() const {
             return _offerToken;
         }
-        std::string toStr() const {
-            return _toStr;
+        std::string toString() const {
+            return _toString;
         }
         bool equals(const Product& p) {
             if (&p == this) {
@@ -62,7 +62,7 @@ public:
         std::string _id;
         std::string _type;
         std::string _offerToken;
-        std::string _toStr;
+        std::string _toString;
     };
 
     ~UserChoiceDetails() {
