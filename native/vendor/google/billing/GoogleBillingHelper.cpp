@@ -208,9 +208,9 @@ void GoogleBillingHelper::acknowledgePurchase(int tag, int callbackId, Acknowled
 BillingResult* GoogleBillingHelper::isFeatureSupported(int tag, const std::string& feature) {
     auto* env = JniHelper::getEnv();
     cc::JniMethodInfo t;
-    if (cc::JniHelper::getStaticMethodInfo(t, JCLS_BILLING, "isFeatureSupported", "(Ljava/lang/String;)Lcom/android/billingclient/api/BillingResult;")) {
+    if (cc::JniHelper::getStaticMethodInfo(t, JCLS_BILLING, "isFeatureSupported", "(ILjava/lang/String;)Lcom/android/billingclient/api/BillingResult;")) {
         jstring jFeature = cc::StringUtils::newStringUTFJNI(env, feature);
-        jobject obj = t.env->CallStaticObjectMethod(t.classID, t.methodID, jFeature);
+        jobject obj = t.env->CallStaticObjectMethod(t.classID, t.methodID, tag, jFeature);
         return cc::JniBilling::toBillingResult(env, obj);
     }
     return nullptr;
